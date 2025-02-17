@@ -1,0 +1,42 @@
+# primeiramente configurar o repositório para nginx (versão mais recente)
+#atualizar a lista de packages
+sudo apt update 
+
+#instalar dependencias necessarias
+sudo apt install -y curl gnupg2 ca-certificates lsb-release
+
+
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+
+# Depois atualizar o sistema e instalar nginx
+sudo apt-get update && sudo apt-get install -y nginx
+
+# Criar arquivo HTML de exemplo
+sudo sh -c 'cat << 'EOF' > /usr/share/nginx/html/index.html
+<!Doctype html>
+<html>
+    <head>
+        <title>CompassUOL</title>
+    </head>
+    <body>
+        <h1>Projeto Linux e AWS</h1>
+
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque id nisi in augue elementum laoreet et suscipit nisi. 
+            Sed imperdiet mattis enim pulvinar dignissim. Fusce euismod, lorem sed mollis lacinia, urna orci pharetra quam, quis ornare ex est quis tortor. 
+            Phasellus dignissim lorem sed purus sodales vestibulum. In at pretium ante. Mauris accumsan facilisis ligula nec dictum. Fusce odio orci, tristique a mattis non, sodales sed metus. 
+            Suspendisse porttitor nulla sed quam consectetur, ut porttitor tortor interdum. Pellentesque non aliquet nunc. Ut aliquam lorem sit amet enim pulvinar lobortis.</p>
+
+
+<script>
+let host = location.host;
+document.getElementById("hostname").innerHTML = host;
+</script>
+
+</body>
+</html>
+EOF
+
+
+# Enable and start nginx service
+sudo systemctl enable nginx --noww
