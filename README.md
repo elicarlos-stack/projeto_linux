@@ -1,12 +1,17 @@
-# Projeto Linux
+# <h1 align="center">Projeto Linux</h1>
 
 ## Configuração de Servidor Web com Monitoramento
+
+## Ferramentas utilizadas
+
+**Aplicações utilizadas :** AWS, Vscode, Linux (Debian12).
 
 ### Etapa 1: Configuração do Ambiente:
 
 Primeiro crie uma VPC na AWS com 2 subnets publicas e 2 subnets privadas. Localize na barra de pesquisar por VPC para criar as subnets:
 depois clique em create VPC.
 
+![Imagem inicial da EC2](img/img_vpc1.png)
 <img src="img/img_vpc1.png" alt="Imagem inicial EC2" />
 
 Em VPC setting voce pode escolher por criar atraves do VPC only ou VPC and more. neste exemplo escolheremos VPC only, após escolher informe um nome para vpc ex: "dev-web" e o bloco IPV4 CIDR para a VPC neste exemplo usei 172.16.0.0/20. as outros opções pode deixar como default.
@@ -110,7 +115,7 @@ Conecte-se à sua instância usando seu IP público (Public IPv4 address)
 
 Exemplo:
 
-ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância" , na tela do terminal confirme com yes e acesse a maquina.
+**ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância"** , na tela do terminal confirme com yes e acesse a maquina.
 
 <img src="img/conectInstance.png" alt="">
 
@@ -131,14 +136,14 @@ para isso digite o comando:</br>
 Outra etapa é instalar as dependências necessárias e transferir dados para o servidor, 
 chave GPG, ca-certificates e lsb-release para fornecer informações da distribuição 
 Linux instalada para isto use:</br>
-<b>sudo apt install -y curl gnupg2 ca-certificates lsb-release</b>.
+**sudo apt install -y curl gnupg2 ca-certificates lsb-release**.
 
 Logo após execute o comando para adicionar a chave de assinatura e configurar o repositorio do Nginx, 
 observe que ao adicionar criamos e salvamos o arquivo em nginx.list.
 
-comando para baixar a assinatura: <b>curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -</b>
+comando para baixar a assinatura: **curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -**
  
-depois execute: <b>echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list</b> 
+depois execute: **echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list**
 
 para que adicione o repositório oficial do Nginx ao arquivo de fontes de pacotes.
 
@@ -146,13 +151,13 @@ Atualize a lista de pacotes com <b>sudo apt update</b>.
 
 <img src="img/nginx2.png" alt="">
 
-Execute <b>sudo apt install nginx -y</b> para instalar o servidor.
+Execute **sudo apt install nginx -y** para instalar o servidor.
 
 <img src="img/nginx-install.png" alt="">
 
-Consulte se o nginx foi instalado pesquisando sobre a versão com <b>sudo nginx -v</b>.
+Consulte se o nginx foi instalado pesquisando sobre a versão com **sudo nginx -v**.
 
-ative o Nginx para iniciar <b>sudo systemctl enable nginx</b>.
+ative o Nginx para iniciar **sudo systemctl enable nginx**.
 
 <img src="img/nginx3.png" alt="">
 
@@ -162,10 +167,11 @@ Agora com o NGINX instalado vamos criar nossa pagina HTML simples, para isto nav
 
 <img src="img/criando_pg_html.png" alt="">
 
-podemos usar o comando <b>cd /usr/share/nginx/html | cat index.html</b> para verificar se o conteudo foi criado.
+podemos usar o comando **cd /usr/share/nginx/html | cat index.html**
+ para verificar se o conteudo foi criado.
 <img src="img/pg-html-simples2.png" alt="">
 
-Ative o nginx com <b>sudo systemctl enable nginx --now</b> depois verifique se o nginx está ativo e servindo a pagina corretamente.
+Ative o nginx com **sudo systemctl enable nginx --now** depois verifique se o nginx está ativo e servindo a pagina corretamente.
 
 <img src="img/ativando-nginx.png" alt="">
 
@@ -176,30 +182,31 @@ Abra o terminal e digite o http://"ip_da_instancia_publica"
 Caso o Servidor sofra uma parada repentina podemos criar um serviço systemd para 
 garantir que o Nginx reinicie automaticamente caso para repentinamente. para criar ou 
 editar um arquivo de serviço para garantir que o Nginx seja reiniciado automaticamente 
-vamos criar o serviço <b>nginx-restart.service</b>. para isto voce pode criar o arquivo 
-usando o touch e depois editar <b>sudo touch /etc/systemd/system/nginx-restart.service</b>. 
-e depois editar com <b>sudo nano /etc/systemd/system/nginx-restart.service</b>
+vamos criar o serviço **nginx-restart.service**. para isto voce pode criar o arquivo 
+usando o touch e depois editar **sudo touch /etc/systemd/system/nginx-restart.service**. 
+e depois editar com **sudo nano /etc/systemd/system/nginx-restart.service**
 
-No arquivo edite escrevendo as instruções[UNIT] para descrever o serviço e o modo de reinicialização, 
-[SERVICE] para informar ao systemd como gerenciar, [INSTALL] como o serviço será instalado e configurado 
+No arquivo edite escrevendo as instruções **[UNIT]** para descrever o serviço e o modo de reinicialização, 
+**[SERVICE]** para informar ao systemd como gerenciar, **[INSTALL]** como o serviço será instalado e configurado 
 para iniciar automaticamente.
 
-<hr>
-[Unit]
-Description=Ensure Nginx Web Server always running</br>
-After=network.target</br>
 
-[Service]</br>
-ExecStart=/usr/sbin/nginx -g 'daemon off;'</br>
-ExecReload=/usr/sbin/nginx -s reload</br>
-ExecStop=/bin/kill -s QUIT \$MAINPID</br>
-PIDFile=/run/nginx.pid</br>
-Restart=always</br>
-RestartSec=5</br>
+```
+[Unit]
+Description=Ensure Nginx Web Server always running
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/nginx -g 'daemon off;'
+ExecReload=/usr/sbin/nginx -s reload
+ExecStop=/bin/kill -s QUIT \$MAINPID
+PIDFile=/run/nginx.pid
+Restart=always
+RestartSec=5
 
 [Install]
-WantedBy=multi-user.target</br>
-<hr>
+WantedBy=multi-user.target
+```
 
 <img src="img/reiniciar_nginx.png" alt="">
 Salve o arquivo e execute o comando <b>sudo systemctl 
@@ -237,7 +244,7 @@ execute o comando para mudar a propriedade de um arquivo ou diretório para o us
 
 Crie um arquivo chamado monitoramento_web.sh no diretório /usr/local/bin com ocomando <b>sudo nano /usr/local/bin/monitoramento_web.sh</b> onde criaremos o scritp com a extensão <b>.sh</b>.
 
-<hr>
+```
 #!/bin/bash
 
 ##### para enviar as informações de logs para o slack
@@ -281,7 +288,7 @@ else
     log_message="$(date): $SITE_URL is up (HTTP status: $response)"
     echo "$log_message" >> $LOGFILE
 fi
-<hr>
+```
 
 <img src="img/script-monitor.png" alt="">
 
