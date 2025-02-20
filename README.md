@@ -11,8 +11,8 @@
 Primeiro crie uma VPC na AWS com 2 subnets publicas e 2 subnets privadas. Localize na barra de pesquisar por VPC para criar as subnets:
 depois clique em create VPC.
 
-![Imagem inicial da EC2](img/img_vpc1.png)
-<img src="img/img_vpc1.png" alt="Imagem inicial EC2" />
+<img src="img/img_vpc1.png" alt="">
+<img src="img/img_vpc1.png" alt="Imagem inicial EC2">
 
 Em VPC setting voce pode escolher por criar atraves do VPC only ou VPC and more. neste exemplo escolheremos VPC only, após escolher informe um nome para vpc ex: "dev-web" e o bloco IPV4 CIDR para a VPC neste exemplo usei 172.16.0.0/20. as outros opções pode deixar como default.
 
@@ -292,19 +292,42 @@ fi
 
 <img src="img/script-monitor.png" alt="">
 
-Após criar e verificar o script salve o arquivo e execute o comando <b>sudo chmod +x /usr/local/bin/monitoramento_web.sh</b> para tornar o script executavel.
+Após criar e verificar o script salve o arquivo e execute o comando **sudo chmod +x /usr/local/bin/monitoramento_web.sh** para tornar o script executavel.
 
-Agora vamos criar uma tarefa com o Cron para executar o script a cada minuto, para isto execute o comando: 
-<b>sudo contrab -e</b> parae ditr as tarefas. por padrão o Cron não vem instalado em distribuições linux para instalar execute o comando <b>sudo apt install cron -y</b>. no editor adicione a seguinte linha <b>* * * * * /usr/local/bin/monitoramento_web.sh</b> ela é representada por astericos que na ordem corresponde ao minuto, Hora, Dia do Mes, Mes, Dia da Semana - juntos significa que vai ser executadoa cada minuto seguido do caminho do script criado monitoramento.sh, para vizualizar se o arquivo foi adicionado execute o listar com <b>crontab -l</b>
+<img src="img/script-monitor.png" alt="">
 
+Para confirmar se o site responde corretamente a uma requisição HTTP podemos usar o comando no terminal Debian na AWS, 
+digite o comando curl como exemplo **curl -I http://"seu_ip"**, o coamndo <b>curl</b> é utilizado para obter o cabeçalho se combinado com a opção <b>-I<b> 
+faz com que apenas seja mostrado o cabeçalho da resposta HTTP.
+
+Para realizar apenas um teste temos que alterar as regras de saida em Outbound rules para permitir 
+que façamos o teste afim de verificar se o site responde coretamente a uma requisição. entao para isto devemos 
+ir na console da AWS -> Security Groups selecionar nosso security group criado com o nome de "MyDevWeb", na aba de Outbound rules 
+clique em editar outbound rules -> add role -> Type selecione "All trafique" -> Destination "My IP" e salve a regra.
+
+<img src="img/outbound.png" alt="">
+<img src="img/outbound3.png" alt="">
+
+
+De volta no terminal digite o comando  **curl -I http://"seu_ip"** mencionado acima e verifique se a consulta retorna "HTTP/1.1 200 OK"
+conforme a imagem abaixo. 
+
+<img src="img/outbound2.png" alt="">
 
 
 Enviar uma notificação via Discord, Telegram ou Slack se detectar indisponibilidade.
 
 
+Agora vamos criar uma tarefa com o Cron para executar o script a cada minuto, para isto execute o comando: 
+**sudo contrab -e** para editar as tarefas. por padrão o Cron não vem instalado em distribuições linux para 
+instalar execute o comando **sudo apt install cron -y**. no editor adicione a seguinte linha **-> * * * * * /usr/local/bin/monitoramento_web.sh** 
+ela é representada por astericos que na ordem corresponde ao minuto, Hora, Dia do Mes, Mes, Dia da Semana - juntos significa que vai ser executadoa 
+cada minuto seguido do caminho do script criado monitoramento.sh, para vizualizar se o arquivo foi adicionado execute o listar com **crontab -l**
+
+<img src="img/crontab.png" alt="">
 
 
-Etapa 4 -
+Etapa 4 - 
 
 
 Verificar e Testar

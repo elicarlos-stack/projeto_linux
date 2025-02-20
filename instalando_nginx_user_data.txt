@@ -21,7 +21,7 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
         <meta charset="UTF-8">
         <title>Projeto Linux AWS da CompassUOL</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="img/logo-uol-icon-512.png" type="image/png">
+        <link rel="icon" href="https://compass.uol/content/aircompanycompass/en/h…t/header_copy/menuImg/1737576379917/menu-icon.png" type="image/png">
         <style>
             body {
                 background-color: #000000;
@@ -29,6 +29,13 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
                 font-family: Arial, Helvetica, sans-serif;
                 margin: 0;
                 padding: 0;
+            }
+
+            #conteudo {
+                width: 80%;
+                margin: 0 auto;
+                padding: 20px;
+                text-align: justify;
             }
 
             header {
@@ -67,6 +74,10 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
 
             h1 {
                 color: yellow; /* Amarelo para os títulos */
+            }
+
+            h2, h3, h4{
+                color: goldenrod;
             }
 
             p {
@@ -108,10 +119,9 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
         </style>
     </head>
     <body>
-
         <header>
             <h1 style="display: flex; align-items: center; justify-content: center;">
-                <img src="img/compass-uol.png" alt="Logo" style="max-height: 50px; margin-right: 10px;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/LogoCompasso-positivo.png" alt="Logo" style="max-height: 50px; margin-right: 10px;">
             </h1>
             <nav>
                 <ul>
@@ -121,11 +131,14 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
                 </ul>
             </nav>
         </header>
-
+    <div id="conteudo">
         <div class="container" id="home">
-            <h2>Bem-vindo ao projeto Linux e AWS com automação de processos</h2>
-            <p>Esta é uma página HTML com CSS inline. O fundo é preto e o texto é branco.</p>
-            <p>Você pode adicionar mais conteúdo aqui e ele seguirá o estilo definido no cabeçalho.</p>
+            <h1>Bem-vindo ao projeto Linux e AWS com automação de processos.</h1>
+            
+            <p>Serviços de nuvem da AWS (Amazon Web Services).</p>
+            <p>Sistema operacional utilizado: Linux (Debian 12).</p>
+            <p>Outras plataformas utilizadas: Slack</p>
+
         </div>
 
         <div class="container" id="ferramentas">
@@ -179,12 +192,15 @@ sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
     
         <footer>
             <div style="display: flex; justify-content: space-between;">
-                <img src="img/amazon-web-services-logo.png" alt="Imagem 1" style="max-width: 45%;">
-                <img src="img/Compass-UOL-footer.png" alt="Imagem 2" style="max-width: 45%;">
-            </div>
+                    <p class="footer-partner-title">Strategic partnership</p>
+                    <img src="	https://compass.uol/content/dam/aircompanycompass/footer/aws-logo.webp" class="footer-partner-image" alt="AWS's logo">
+                    <p class="footer-partner-title">Powered by</p>
+                    <img src="	https://compass.uol/content/dam/aircompanycompass/footer/ai-cockpit-logo.webp" class="footer-ai-cockpit-image" alt="Ai Cockpit's logo">
+                    <img src="https://compass.uol/content/dam/aircompanycompass/footer/part-of-air-mobile.webp" class="footer-ai-logo" alt="Part of AI/R">
+                </div>
             <p style="text-align: center;">© COMPASS UOL TECNOLOGIA LTDA — 1996 – 2025— All rights reserved</p>
         </footer>
-
+    </div>
     </body>
 </html>
 EOF
@@ -192,40 +208,81 @@ EOF
 # Habilitar e iniciar o serviço Nginx para reinício automático
 sudo systemctl enable nginx --now
 
+#Verifica se o Nginx esta rodando
 
-# Cria um serviço systemd para garantir que o Nginx reinicie automaticamente
-sudo sh -c cat << 'EOF' > /etc/systemd/system/nginx-restart.service
+sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_web.sh
+#!/bin/bash
+
+SERVICE="nginx"
+
+#ver se o Nginx está rodando
+if ! systemctl is-active --quiet $SERVICE; then
+        echo "$(date): Nginx parou! reiniciando..." >> /var/log/monitoramento.log
+        systemctl restart $SERVICE
+
+        # verificar novamente se o Nginx foi reiniciado
+        if systemctl is-active --quiet $SERVICE; then
+                echo "$(date): Nginx reiniciado com sucesso!" >> /var/log/monitoramento.log
+        else
+                echo "$(date): Falha ao reiniciar o Nginx!" >> /var/log/monitoramento.log  
+        fi
+fi
+EOF
+
+#Altere as permissoes de execucao do script
+sudo chmod +x /usr/local/bin/monitoramento_web.sh
+
+
+#Cria um serviço systemd para garantir que o Nginx reinicie automaticamente
+
+sudo sh -c cat << 'EOF' > /etc/systemd/system/servico_monitoramento_nginx.service
 [Unit]
-Description=Ensure Nginx Web Server always running
+Description=Monitoramento do Nginx
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/nginx -g 'daemon off;'
-ExecReload=/usr/sbin/nginx -s reload
-ExecStop=/bin/kill -s QUIT \$MAINPID
-PIDFile=/run/nginx.pid
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
+ExecStart=/usr/local/bin/monitoramento_web.sh
+Type=simple
+User=root
 EOF
 
-# Recarregar os Arquivos de Unidade do systemd
+
+#Cria o timer para executar o serviço a cada 1 minuto
+sudo sh -c cat << 'EOF' > /etc/systemd/system/monitoramento_nginx.timer
+[Unit]
+Description=Executar o monitoramento do Nginx a cada 1 minuto
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=servico_monitoramento_nginx.service
+
+[Install]
+WantedBy=timers.target
+EOF
+
+
+#Recarregue as configurações do systemd
 sudo systemctl daemon-reload
 
-# Habilitar e Iniciar o Serviço de Reinício Automático
-sudo systemctl enable nginx-restart --now
-sudo systemctl start nginx-restart
+#Habilite o timer para iniciar automaticamente com o sistema
+sudo systemctl enable monitoramento_nginx.timer
 
 
-
+#Inicie o time imediatamente
+sudo systemctl start monitoramento_nginx.timer
 
 
 # Monitoramento e Notificacaoes
 # Script para criar o monitoramento do site e enviar ao Slack
-sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_web.sh
+sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_notificacao.sh
 #!/bin/bash
+
+# Verificar se a pasta que criamos monitoramento.log se não cria em log
+if [ ! -f "$LOGFILE" ]; then
+    sudo touch "$LOGFILE"
+    sudo chmod 666 "$LOGFILE"
+fi
 
 LOGFILE="/var/log/monitoramento.log"
 SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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" #Substituir pela URL do webhook do Slack 
@@ -243,12 +300,6 @@ fi
 # Definir a URL do site
 SITE_URL="http://$PUBLIC_IP"
 
-# Verificar se a pasta que criamos monitoramento.log se não cria em log
-if [ ! -f "$LOGFILE" ]; then
-    sudo touch "$LOGFILE"
-    sudo chmod 666 "$LOGFILE"
-fi
-
 # Função para enviar notificação para o Slack
 send_slack_notification() {
     message="$1"
@@ -256,28 +307,36 @@ send_slack_notification() {
     curl -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"
 }
 
-# Verificar a resposta do site
-response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$SITE_URL")
+# Obter o código HTTP da resposta
+response=$(curl -o /dev/null -s -w "%{http_code}" -I --connect-timeout 5 "$SITE_URL")
 
-# Verificar se o status da resposta não é 200(OK)
-if [ "$response" -ne 200 ]; then
-    log_message="$(date): $SITE_URL is down (HTTP status: $response)"
-    echo "$log_message" >> $LOGFILE
+# Verifica se o status é 000 ou diferente de 200
+if [ "$response" -eq 000 ] || [ "$response" -ne 200 ]; then
+    # Se o status for 000, define uma mensagem especial
+    if [ "$response" -eq 000 ]; then
+        response_message="Indisponível ou erro na requisição"
+    else
+        response_message="HTTP status: $response"
+    fi
+
+    log_message="$(date -u): $SITE_URL Site está fora do ar ($response_message)"
+    
+    # Registra no log
+    echo "$log_message" >> "$LOGFILE"
+    
+    # Envia alerta para o Slack
     send_slack_notification "$log_message"
-else
-    log_message="$(date): $SITE_URL is up (HTTP status: $response)"
-    echo "$log_message" >> $LOGFILE
 fi
 EOF
 
 # Aqui tornaremos o script executável
-sudo chmod +x /usr/local/bin/monitoramento_web.sh
+sudo chmod +x /usr/local/bin/monitoramento_notificacao.sh
 
 # Comando para instalar o cron
 sudo apt install cron -y
 
 # Aqui adicionar a tarefa cron para rodar a cada 1 minuto
-(sudo crontab -l 2>/dev/null; echo "* * * * * /usr/local/bin/monitoramento_web.sh") | sudo crontab -
+(sudo crontab -l 2>/dev/null; echo "* * * * * /usr/local/bin/monitoramento_notificacao.sh") | sudo crontab -
 
 # Execute o comando para iniciar o cron
 sudo service cron start
