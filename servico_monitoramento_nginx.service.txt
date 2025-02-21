@@ -1,0 +1,8 @@
+[Unit]
+Description=Monitoramento do Nginx
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/monitoramento_web.sh
+Type=simple
+User=root

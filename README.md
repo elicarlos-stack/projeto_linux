@@ -1,4 +1,4 @@
-# <h1 align="center">Projeto Linux</h1>
+# <h1 align="center">Configuração de Servidor Web com Monitoramento</h1>
 
 ## Configuração de Servidor Web com Monitoramento
 
@@ -11,7 +11,6 @@
 Primeiro crie uma VPC na AWS com 2 subnets publicas e 2 subnets privadas. Localize na barra de pesquisar por VPC para criar as subnets:
 depois clique em create VPC.
 
-<img src="img/img_vpc1.png" alt="">
 <img src="img/img_vpc1.png" alt="Imagem inicial EC2">
 
 Em VPC setting voce pode escolher por criar atraves do VPC only ou VPC and more. neste exemplo escolheremos VPC only, após escolher informe um nome para vpc ex: "dev-web" e o bloco IPV4 CIDR para a VPC neste exemplo usei 172.16.0.0/20. as outros opções pode deixar como default.
@@ -91,7 +90,12 @@ Nesta etapa coloque as Tags caso necessario. Escolha a imagem AMI, neste usei o 
 <img src="img/ec2_instance2.png" alt="" />
 <img src="img/ec2_instance3.png" alt="" />
 
-Agora para associar um Security Group que permita tráfego HTTP (porta 80) e SSH na (porta 22) edite o security group permitindo regras de entrada de SSH e HTTP. Em security group selecione o security group criado "MyDevWeb" na aba Inbound rules clique em Edite inbound rules. adicione o type como HTTP, source selecione MyIP, adicione novamente para type SSH source MyIP e Salve(save rules).
+Agora para associar um Security Group que permita tráfego HTTP (porta 80) e SSH na (porta 22) 
+edite o security group permitindo regras de entrada de SSH e HTTP. 
+Em security group selecione o security group criado "MyDevWeb" na aba Inbound rules 
+clique em Edite inbound rules. adicione o type como HTTP, source selecione MyIP, 
+adicione novamente para type SSH source MyIP e Salve(save rules).
+(Obs: como o IP da instância está publico ao selecionar o Source como MyIP pode estar diferente da imagem mostrada aqui).
 
 <img src="img/securitygroupssh.png" alt="" />
 
@@ -115,7 +119,7 @@ Conecte-se à sua instância usando seu IP público (Public IPv4 address)
 
 Exemplo:
 
-**ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância"** , na tela do terminal confirme com yes e acesse a maquina.
+**ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância"** , na tela do terminal confirme com "yes" e acesse a maquina.
 
 <img src="img/conectInstance.png" alt="">
 
@@ -163,13 +167,16 @@ ative o Nginx para iniciar **sudo systemctl enable nginx**.
 
 ### 2 - Criar uma pagina HTML simples.
 
-Agora com o NGINX instalado vamos criar nossa pagina HTML simples, para isto navegue até o diretorio que serve a pagina html do nosso Servidor em <b>cd /usr/share/ngin/html</b> verifique o arquivo index.html, caso queiro salve o arquivo original com o nome index.html.original e crie um novo index.html com o comando <b>sudo nano index.html</b> e digite ou cole o seu codigo HTML depois salve o arquivo.
+Agora com o NGINX instalado vamos criar nossa pagina HTML simples, 
+para isto navegue até o diretorio que serve a pagina html do nosso Servidor 
+em <b>cd /usr/share/ngin/html</b> verifique o arquivo index.html, caso queiro 
+salve o arquivo original com o nome index.html.original e crie um novo index.html 
+com o comando <b>sudo nano index.html</b> e digite ou cole o seu codigo HTML depois salve o arquivo.
 
 <img src="img/criando_pg_html.png" alt="">
 
 podemos usar o comando **cd /usr/share/nginx/html | cat index.html**
  para verificar se o conteudo foi criado.
-<img src="img/pg-html-simples2.png" alt="">
 
 Ative o nginx com **sudo systemctl enable nginx --now** depois verifique se o nginx está ativo e servindo a pagina corretamente.
 
@@ -180,60 +187,84 @@ Abra o terminal e digite o http://"ip_da_instancia_publica"
 
 
 Caso o Servidor sofra uma parada repentina podemos criar um serviço systemd para 
-garantir que o Nginx reinicie automaticamente caso para repentinamente. para criar ou 
-editar um arquivo de serviço para garantir que o Nginx seja reiniciado automaticamente 
-vamos criar o serviço **nginx-restart.service**. para isto voce pode criar o arquivo 
-usando o touch e depois editar **sudo touch /etc/systemd/system/nginx-restart.service**. 
-e depois editar com **sudo nano /etc/systemd/system/nginx-restart.service**
+garantir que o Nginx reinicie automaticamente. 
+antes de criarmos um arquivo de serviço para garantir que o Nginx seja reiniciado automaticamente
+vamos criar um arquivo que verifica se o Nginx está rodando, para isto navegue até o direotio **/bin** 
+para criar o arquivo chamado "monitoramento_web.sh", digite o comando cd para ir ate o diretorio exemplo:
+cd /usr/local/bin, aqui utilize o **sudo nano monitoramento_web.sh** como na imagem abaixo 
+para criar o arquivo de monitoramento.
 
-No arquivo edite escrevendo as instruções **[UNIT]** para descrever o serviço e o modo de reinicialização, 
-**[SERVICE]** para informar ao systemd como gerenciar, **[INSTALL]** como o serviço será instalado e configurado 
-para iniciar automaticamente.
+<img src="img/monitoramento_web1.png" alt="">
 
+```
+#!/bin/bash
+
+SERVICE="nginx"
+
+#ver se o Nginx está rodando
+if ! systemctl is-active --quiet $SERVICE; then
+        echo "$(date): Nginx parou! reiniciando..." >> /var/log/monitoramento.log
+        systemctl restart $SERVICE
+
+        # verificar novamente se o Nginx foi reiniciado
+        if systemctl is-active --quiet $SERVICE; then
+                echo "$(date): Nginx reiniciado com sucesso!" >> /var/log/monitoramento.log
+        else
+                echo "$(date): Falha ao reiniciar o Nginx!" >> /var/log/monitoramento.log  
+        fi
+fi
+```
+
+altere as permissoes de execução do script digitando o comando 
+**sudo chmod +x /usr/local/bin/monitoramento_web.sh**, o "chmod +x" 
+permite alterar para ter permissões de execução.
+
+Agora criaremos um serviço systemd para garantir que o Nginx reinicie automaticamente, para isto va ate o diretorio 
+**cd /etc/systemd/system** crie um arquivo com nome "system/servico_monitoramento_nginx.service" digitando 
+**sudo nano servico_monitoramento_nginx.service** e digite o codigo abaixo conforme a imagem:
+
+<img src="img/servico_monitoramento_nginx1.png" alt="">
 
 ```
 [Unit]
-Description=Ensure Nginx Web Server always running
+Description=Monitoramento do Nginx
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/nginx -g 'daemon off;'
-ExecReload=/usr/sbin/nginx -s reload
-ExecStop=/bin/kill -s QUIT \$MAINPID
-PIDFile=/run/nginx.pid
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
+ExecStart=/usr/local/bin/monitoramento_web.sh
+Type=simple
+User=root
 ```
-
-<img src="img/reiniciar_nginx.png" alt="">
-Salve o arquivo e execute o comando <b>sudo systemctl 
-daemon-reload<b> para habilitar e iniciar o serviço de 
-reinício automático. reinicie o Nginx para validar as 
-configurações com <b>sudo systemctl enable nginx-restart --now</b> e inicie o servidor <b> sudo systemctl start nginx</b>
 
 ## Etapa 3:
 
-Ter um site e não monitorar sua disponibilidade pode ser arriscado, pois você pode perder visitantes ao seu site e possíveis clientes sem perceber problemas em seu Servidor. Monitorar é essencial para garantir a estabilidade e resolver falhas rapidamente. Então vamos criar um script que verifique a disponibilidade do site.
+Ter um site e não monitorar sua disponibilidade pode ser arriscado, pois você pode perder visitantes 
+ao seu site e possíveis clientes sem perceber problemas em seu Servidor. Monitorar é essencial para 
+garantir a estabilidade e resolver falhas rapidamente. Então vamos criar um script que verifique a 
+disponibilidade do site.
 
 crie um script em Bash ou Python para monitorar a disponibilidade do site. 
 
 Antes disso vamos criar uma conta no Slack que é uma plataforma de comunicação e colaboração projetada para equipes e empresas.
 
-para criar uma conta no Slack e instalar a API Webhook acesse o site do Slack clique em Começar para criar uma conta. informe um e-mail e será enviado um codigo no seu email, informe o codigo. ao acessar o site voçê pode criar um workspace.
+para criar uma conta no Slack e instalar a API Webhook acesse o site do Slack clique em Começar para criar uma conta. 
+informe um e-mail e será enviado um codigo no seu email, informe o codigo. ao acessar o site voçê pode criar um workspace.
 <img src="img/slack1.png" alt=""></br>
 Na proxima tela informe o nome da empresa ou equipe.
 
-Agora para instalar a API Webhooke acesse o site https://api.slack.com/apps . depois habilite Incoming Webhooks em features, e ative a opção Incoming Webhooks.
+Agora para instalar a API Webhooke acesse o site https://api.slack.com/apps . depois habilite Incoming Webhooks em features, 
+e ative a opção Incoming Webhooks.
 
 <img src="img/slack2.png" alt=""></br>
 
-Adicione um novo Webhook ao workspace clique em "Add New Webhook to Workspace" e escolha o canal onde as mensagens serão postadas. No nosso exemplo crie um Channel com nome de "projetolinux". Copie a URL do Webhook para informar no script a variável "SLACK_WEBHOOK_URL". o webhook do Slack permite que o script envie notificações para um canal específico no Slack.
+Adicione um novo Webhook ao workspace clique em "Add New Webhook to Workspace" e escolha o canal onde as mensagens serão postadas. 
+No nosso exemplo crie um Channel com nome de "projetolinux". Copie a URL do Webhook para informar no script a 
+variável "SLACK_WEBHOOK_URL". o webhook do Slack permite que o script envie notificações para um canal específico no Slack.
 
-Vamos criar tambem um log para armazenar logs das verificações de disponibilidade do site. para isto crie em <b>cd /var/log</b> o arquivo <b>monitoramento.log</b>
-execute o comando sudo com o <b>touch</b>, o touch irá criar um arquivo em branco. depois execute o comando <b>sudo chmod 644 /var/log/monitoramento.log</b> para alterar permissões.  
+Vamos criar também um log para armazenar logs das verificações de disponibilidade do site. para isto crie 
+em <b>cd /var/log</b> o arquivo <b>monitoramento.log</b>
+execute o comando sudo com o <b>touch</b>, o touch irá criar um arquivo em branco. depois execute o 
+comando <b>sudo chmod 644 /var/log/monitoramento.log</b> para alterar permissões.  
 
 <img src="img/monitoramento_log1.png" alt=""></br>
 
@@ -242,59 +273,9 @@ execute o comando para mudar a propriedade de um arquivo ou diretório para o us
 <img src="img/monitoramento_log2.png" alt=""></br>
 
 
-Crie um arquivo chamado monitoramento_web.sh no diretório /usr/local/bin com ocomando <b>sudo nano /usr/local/bin/monitoramento_web.sh</b> onde criaremos o scritp com a extensão <b>.sh</b>.
 
-```
-#!/bin/bash
 
-##### para enviar as informações de logs para o slack
-LOGFILE="/var/log/monitoramento.log"</br>
-SLACK_WEBHOOK_URL="substituir pelo URL do webhook do Slack"
 
-##### para capturar o IP público da instancia da AWS
-TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4)
-
-##### verificar se oIP público foi adiquirido
-if [ -z "$PUBLIC_IP" ]; then
-    echo "$(date): erro ao obter o IP público da instância" >> $LOGFILE
-    exit 1
-fi
-
-##### montar a URL do site
-SITE_URL="http://$PUBLIC_IP"
-
-##### verificar se o nosso de arquivo de log monitoramento.log existe 
-if [ ! -f "$LOGFILE" ]; then
-    sudo touch "$LOGFILE"
-    sudo chmod 666 "$LOGFILE"
-fi
-
-##### enviar notificação para o Slack
-send_slack_notification() {
-    message="$1"
-    payload="{\"text\": \"$message\"}"
-    curl -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"
-}
-
-##### aqui verifica a resposta do site
-response=$(curl --write-out "%{http_code}" --silent --output /dev/null "$SITE_URL")
-
-if [ "$response" -ne 200 ]; then
-    log_message="$(date): $SITE_URL is down (HTTP status: $response)"
-    echo "$log_message" >> $LOGFILE
-    send_slack_notification "$log_message"
-else
-    log_message="$(date): $SITE_URL is up (HTTP status: $response)"
-    echo "$log_message" >> $LOGFILE
-fi
-```
-
-<img src="img/script-monitor.png" alt="">
-
-Após criar e verificar o script salve o arquivo e execute o comando **sudo chmod +x /usr/local/bin/monitoramento_web.sh** para tornar o script executavel.
-
-<img src="img/script-monitor.png" alt="">
 
 Para confirmar se o site responde corretamente a uma requisição HTTP podemos usar o comando no terminal Debian na AWS, 
 digite o comando curl como exemplo **curl -I http://"seu_ip"**, o coamndo <b>curl</b> é utilizado para obter o cabeçalho se combinado com a opção <b>-I<b> 
@@ -315,19 +296,196 @@ conforme a imagem abaixo.
 <img src="img/outbound2.png" alt="">
 
 
-Enviar uma notificação via Discord, Telegram ou Slack se detectar indisponibilidade.
+Agora vamos criar um script para monitorar e enviar notificações para o serviço Slack se detectar indisponibilidade.
+navegue ate o diretorio **/usr/local/bin** onde são armazenados os executáveis de programas.
+digite **sudo nano monitoramento_notificacao.sh** para criar o Script de envio e notificação. 
+digite o script fornecido conforme a imagem abaixo e salve o arquivo:
+
+<img src="img/" alt=""> 
+
+```
+#!/bin/bash
+
+# Verificar se a pasta que criamos monitoramento.log se não criar em log
+if [ ! -f "$LOGFILE" ]; then
+    sudo touch "$LOGFILE"
+    sudo chmod 666 "$LOGFILE"
+fi
+
+LOGFILE="/var/log/monitoramento.log"
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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" #Substituir pela URL do webhook do Slack 
+
+# Token para obter o IP público da instância AWS
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4)
+
+# Nesta parte verificar se o IP público foi obtido com sucesso
+if [ -z "$PUBLIC_IP" ]; then
+    echo "$(date): erro ao obter o IP público da instância" >> $LOGFILE
+    exit 1
+fi
+
+# Definir a URL do site
+SITE_URL="http://$PUBLIC_IP"
+
+# Função para enviar notificação para o Slack
+send_slack_notification() {
+    message="$1"
+    payload="{\"text\": \"$message\"}"
+    curl -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"
+}
+
+# Obter o código HTTP da resposta
+response=$(curl -o /dev/null -s -w "%{http_code}" -I --connect-timeout 5 "$SITE_URL")
+
+# Verifica se o status é 000 ou diferente de 200
+if [ "$response" -eq 000 ] || [ "$response" -ne 200 ]; then
+    # Se o status for 000, define uma mensagem especial
+    if [ "$response" -eq 000 ]; then
+        response_message="Indisponível ou erro na requisição"
+    else
+        response_message="HTTP status: $response"
+    fi
+
+    log_message="$(date -u): $SITE_URL Site está fora do ar ($response_message)"
+    
+    # Registra no log
+    echo "$log_message" >> "$LOGFILE"
+    
+    # Envia alerta para o Slack
+    send_slack_notification "$log_message"
+fi
+```
+
+<img src="img/script-monitor.png" alt="">
+
+Após criar e verificar o script salve o arquivo e execute o comando **sudo chmod +x /usr/local/bin/monitoramento_notificacao.sh** 
+para tornar o script executavel.
 
 
-Agora vamos criar uma tarefa com o Cron para executar o script a cada minuto, para isto execute o comando: 
+Agora vamos criar uma tarefa com o "Cron" para executar o script a cada minuto, para isto execute o comando: 
 **sudo contrab -e** para editar as tarefas. por padrão o Cron não vem instalado em distribuições linux para 
-instalar execute o comando **sudo apt install cron -y**. no editor adicione a seguinte linha **-> * * * * * /usr/local/bin/monitoramento_web.sh** 
-ela é representada por astericos que na ordem corresponde ao minuto, Hora, Dia do Mes, Mes, Dia da Semana - juntos significa que vai ser executadoa 
-cada minuto seguido do caminho do script criado monitoramento.sh, para vizualizar se o arquivo foi adicionado execute o listar com **crontab -l**
+instalar execute o comando **sudo apt install cron -y**. 
+
+<img src="img/cron1.png" alt="">
+
+apos instalação edite o "cron" com **crontab -e**, irá abrir a tela de seleção do editor escolha um, neste exemplo escolhi o "nano" digitando 1, no editor adicione a seguinte linha no final do arquivo:<b>* * * * * /usr/local/bin/monitoramento_web.sh<b>
+ela é representada por astericos que na ordem corresponde ao minuto, Hora, Dia do Mes, Mes, Dia da Semana - juntos 
+significa que vai ser executadoa cada minuto seguido do caminho do script criado monitoramento.sh, salve o arquivo. 
+para vizualizar se o arquivo foi adicionado execute o listar com **crontab -l**
 
 <img src="img/crontab.png" alt="">
 
+Execute o comando para iniciar o "Cron" **sudo service cron start**.
 
-Etapa 4 - 
+
+No diretorio systemd/system também criaremos um "timer" 
+para executar o serviço a cada 1 minuto e garantir que o 
+Script de serviço "servico_monitoramento_nginx.service" 
+que o Nginx reinicie automaticamente para executar o serviço 
+a cada 1 minuto. Va até o diretorio **cd /etc/systemd/system** e
+crie o arquivo "monitoramento_nginx.timer" 
+com **sudo monitoramento_nginx.timer**. conforme a imagem abaixo:
+
+<img src="img/monitoramento_nginx_timer.png" alt="">
+
+```
+[Unit]
+Description=Executar o monitoramento do Nginx a cada 1 minuto
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=servico_monitoramento_nginx.service
+
+[Install]
+WantedBy=timers.target
+```
+
+logo após a criação recarregue as configurações do systemd com
+**sudo systemctl daemon-reload**
+
+também habilite o timer para iniciar automaticamente com o sistema
+**sudo systemctl enable monitoramento_nginx.timer**
+
+Agora digite o comando para iniciar o timer imediatamente com
+**sudo systemctl start monitoramento_nginx.timer**
+
+
+Etapa 4 - Automação e testes:
+
+Para testar a implementação e verificar se está funcional vamos checar se o site está acessível via navegador. Copie o IP Public IPv4 address da nossa instancia criada na AWS, para encontrar o ip va em EC2, instance, selecione a instancia criada e na aba Details(detalhes) procure pelo ip publico Ipv4 copie cole no navegador e verifique se o site esta acessivel. no nosso exemplo o site é mostrado conforme a imagem a baixo, confirmando o funcionamento do Nginx de servir a pagina do site.
+
+<img src="img/site.png" alt="">
+
+Agora vamos fazer testes para verificar se ao parar o Nginx o nosso script detecta e envia alertas corretamente.
+para isto vamos chegar o status do Nginx digitanto **sudo systemctl status nginx** 
+
+<img src="img/teste1.png" alt="">
+
+
+agora pare o servidor com **systemctl stop nginx**
+
+<img src="img/teste2.png" alt="">
+
+perceba que ao parar o Nginx e checar o status na mensagem "Active: inactive" esta como inativo. nosso servidor parou, logo apos se o script estiver funcional e digitar o comando de status novamente ele tera que estar "ativo" e servindo a pagina(site) corretamente. 
+
+<img src="img/teste3.png" alt="">
+<img src="img/teste4.png" alt="">
+
+
+Criar uma documentação no GitHub explicando:
+Como configurar o ambiente.
+Como instalar e configurar o servidor web.
+Como funciona o script de monitoramento.
+Como testar e validar a solução.
+
+
+
+
+Verifique se o timer está rodando:
+
+bash
+
+sudo systemctl list-timers --all
+Você deve ver nginx_monitor.timer na lista, com a próxima execução marcada para o próximo minuto.
+
+Pare o Nginx para testar:
+
+bash
+
+sudo systemctl stop nginx
+Espere 1 minuto e veja se ele foi reiniciado automaticamente:
+
+bash
+
+systemctl status nginx
+Verifique os logs do monitoramento:
+
+bash
+
+cat /var/log/nginx_monitor.log
+Se tudo estiver funcionando, você verá registros indicando que o Nginx foi reiniciado.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Verificar e Testar
@@ -351,3 +509,358 @@ Verifique se o arquivo de log está sendo criado e atualizado corretamente:
 
 bash
 cat /var/log/monitoramento.log
+
+
+
+
+## Desafio Bônus:
+Para quem deseja se aprofundar mais:
+
+Automação com User Data na (AWS):
+Podemos configurar a EC2 para já iniciar com Nginx, HTML e script de monitoramento via User Data.
+ 
+basta organizar o arquivo da seguinte maneira e adicionar na hora de criar uma instancia. exemplo: em EC2 ir em Instances, Lauch Instance(criar instancia) conforme ensinado no inicio do projeto como criar instanciana EC2, depois de ter colocoado as especificações em Advanced details expanda a flag no final terá um campo de "User data - optional" copie o arquivo abaixo e cole no campo depois clique em criar sua instancia (Lauch instance) pronto ao executar a insancia ela sera carregada com Nginx, HTML e script de monitoramento. deixarei tambem o arquivo disponivel nas pastas para consulta.
+
+```
+#!/bin/bash
+# Projeto Linux
+# Configuracao do Servidor Web
+
+# Atualizar a lista de pacotes e instalar dependências necessárias
+sudo apt update 
+sudo apt install -y curl gnupg2 ca-certificates lsb-release
+
+# Adicionar a chave de assinatura GPG e configura o repositório do Nginx
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
+echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+
+# Atualizar a lista de pacotes e instalar o Nginx
+sudo apt update && sudo apt install -y nginx
+
+# Criar pagina html e salvar em index.html
+sudo sh -c cat << 'EOF' > /usr/share/nginx/html/index.html
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Projeto Linux AWS da CompassUOL</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="https://compass.uol/content/aircompanycompass/en/h…t/header_copy/menuImg/1737576379917/menu-icon.png" type="image/png">
+        <style>
+            body {
+                background-color: #000000;
+                color: white;
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0;
+                padding: 0;
+            }
+
+            #conteudo {
+                width: 80%;
+                margin: 0 auto;
+                padding: 20px;
+                text-align: justify;
+            }
+
+            header {
+                background-color: #333;
+                padding: 10px 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            nav ul {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                display: flex;
+            }
+
+            nav ul li {
+                margin: 0 15px;
+            }
+
+            nav a {
+                color: #E7E5DE;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            nav a:hover {
+                text-decoration: underline;
+                color: #FFBF00;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                color: yellow; /* Amarelo para os títulos */
+            }
+
+            h2, h3, h4{
+                color: goldenrod;
+            }
+
+            p {
+                color: #FFFFFF; /* Branco para os parágrafos */
+            }
+
+            a {
+                color: #1E90FF; /* Azul para os links */
+            }
+
+            footer {
+                background-color: #111116;
+                padding: 20px;
+                text-align: center;
+            }
+
+            .footer-images {
+                display: flex;
+                justify-content: center;
+                gap: 5px; /* Espaço entre as imagens */
+            }
+
+            .footer-images img {
+                width: 20px; /* Diminui o tamanho da largura */
+                max-width: 2%; /* Ajuste conforme necessário */
+            }
+
+            @media (max-width: 768px) {
+                header {
+                    flex-direction: column;
+                }   
+                nav ul {
+                    flex-direction: column;
+                }
+                nav ul li {
+                    margin: 5px 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1 style="display: flex; align-items: center; justify-content: center;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/LogoCompasso-positivo.png" alt="Logo" style="max-height: 50px; margin-right: 10px;">
+            </h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#ferramentas">Ferramentas</a></li>
+                    <li><a href="#contato">Projetos</a></li>
+                </ul>
+            </nav>
+        </header>
+    <div id="conteudo">
+        <div class="container" id="home">
+            <h1>Bem-vindo ao projeto Linux e AWS com automação de processos.</h1>
+            
+            <p>Serviços de nuvem da AWS (Amazon Web Services).</p>
+            <p>Sistema operacional utilizado: Linux (Debian 12).</p>
+            <p>Outras plataformas utilizadas: Slack</p>
+
+        </div>
+
+        <div class="container" id="ferramentas">
+            <h2>Configuração de Servidor Web com Monitoramento</h2>
+            <h3>Objetivo</h3>
+            <p>O objetivo deste projeto é desenvolver e testar habilidades práticas em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. A proposta é criar um servidor web robusto, seguro e confiável, além de implementar um sistema de monitoramento que garanta a disponibilidade do site e a rápida identificação de falhas.</p>
+            
+            <h3>Descrição do Projeto</h3>
+            <p>O projeto envolve a configuração de um servidor web utilizando uma instância EC2 da AWS, implementação de um serviço de monitoramento contínuo e automação de tarefas para garantir a eficiência e eficácia do servidor. Seguindo as melhores práticas, o projeto aborda desde a instalação e configuração do servidor web até a criação de scripts de monitoramento e a integração com ferramentas de notificação.</p>
+            
+            <h3>Passos do Projeto</h3>
+            <h4>Criação da Instância AWS EC2:</h4>
+            <p>Provisionar uma instância EC2 na AWS.</p>
+            <p>Configurar as regras de segurança para permitir o tráfego HTTP e SSH.</p>
+
+            <h4>Instalação do Servidor Web:</h4>
+            <p>Instalar e configurar o servidor web (como Nginx ou Apache) na instância EC2.</p>
+            <p>Configurar o servidor para servir uma página web simples.</p>
+
+            <h4>Automação com Scripts de Bash:</h4>
+            <p>Criar scripts Bash para automação de tarefas, como backup de arquivos e atualizações do sistema.</p>
+            <p>Configurar o cron para executar tarefas automatizadas periodicamente.</p>
+
+            <h4>Implementação do Monitoramento:</h4>
+            <p>Criar scripts de monitoramento em Bash para verificar a disponibilidade do site.</p>
+            <p>Utilizar curl para checar o status HTTP do site e registrar logs.</p>
+            <p>Enviar notificações de falhas via webhook do Slack.</p>
+
+            <h4>Integração com AWS CloudWatch:</h4>
+            <p>Enviar métricas personalizadas para o CloudWatch utilizando AWS CLI.</p>
+            <p>Configurar alarmes no CloudWatch para monitorar a disponibilidade do site e enviar notificações em caso de falhas.</p>
+
+            <h4>Documentação e Testes:</h4>
+            <p>Documentar todos os passos e configurações realizadas.</p>
+            <p>Realizar testes para garantir que o servidor e o sistema de monitoramento funcionem corretamente.</p>
+        </div>
+
+        <div class="container">
+            <h2>Ferramentas Utilizadas</h2>
+            <p>AWS EC2: Para provisionamento e gerenciamento da instância do servidor.</p>
+            <p>Nginx: Servidor web para hospedar a página web.</p>
+            <p>Bash: Para automação e criação de scripts de monitoramento.</p>
+            <p>AWS CLI: Para integração e envio de métricas ao CloudWatch.</p>
+            <p>Slack: Para receber notificações de falhas e alertas.</p>
+            
+            <h2>Conclusão</h2>
+            <p>Este projeto não só aprimora o conhecimento técnico em Linux, AWS e automação, mas também reforça a importância de monitorar continuamente os serviços para garantir alta disponibilidade e rápida resposta a incidentes. A implementação prática e a documentação detalhada proporcionam uma base sólida para futuros projetos de infraestrutura e administração de servidores.</p>
+        </div>
+
+        <hr>
+    
+        <footer>
+            <div style="display: flex; justify-content: space-between;">
+                    <p class="footer-partner-title">Strategic partnership</p>
+                    <img src="	https://compass.uol/content/dam/aircompanycompass/footer/aws-logo.webp" class="footer-partner-image" alt="AWS's logo">
+                    <p class="footer-partner-title">Powered by</p>
+                    <img src="	https://compass.uol/content/dam/aircompanycompass/footer/ai-cockpit-logo.webp" class="footer-ai-cockpit-image" alt="Ai Cockpit's logo">
+                    <img src="https://compass.uol/content/dam/aircompanycompass/footer/part-of-air-mobile.webp" class="footer-ai-logo" alt="Part of AI/R">
+                </div>
+            <p style="text-align: center;">© COMPASS UOL TECNOLOGIA LTDA — 1996 – 2025— All rights reserved</p>
+        </footer>
+    </div>
+    </body>
+</html>
+EOF
+
+# Habilitar e iniciar o serviço Nginx para reinício automático
+sudo systemctl enable nginx --now
+
+#Verifica se o Nginx esta rodando
+
+sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_web.sh
+#!/bin/bash
+
+SERVICE="nginx"
+
+#verificar se o Nginx está rodando
+if ! systemctl is-active --quiet $SERVICE; then
+        echo "$(date): Nginx parou! reiniciando..." >> /var/log/monitoramento.log
+        systemctl restart $SERVICE
+
+        # verificar novamente se o Nginx foi reiniciado
+        if systemctl is-active --quiet $SERVICE; then
+                echo "$(date): Nginx reiniciado com sucesso!" >> /var/log/monitoramento.log
+        else
+                echo "$(date): Falha ao reiniciar o Nginx!" >> /var/log/monitoramento.log  
+        fi
+fi
+EOF
+
+#Altere as permissoes de execucao do script
+sudo chmod +x /usr/local/bin/monitoramento_web.sh
+
+
+#Cria um serviço systemd para garantir que o Nginx reinicie automaticamente
+
+sudo sh -c cat << 'EOF' > /etc/systemd/system/servico_monitoramento_nginx.service
+[Unit]
+Description=Monitoramento do Nginx
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/monitoramento_web.sh
+Type=simple
+User=root
+EOF
+
+
+#Cria o timer para executar o serviço a cada 1 minuto
+sudo sh -c cat << 'EOF' > /etc/systemd/system/monitoramento_nginx.timer
+[Unit]
+Description=Executar o monitoramento do Nginx a cada 1 minuto
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=servico_monitoramento_nginx.service
+
+[Install]
+WantedBy=timers.target
+EOF
+
+#Recarregue as configurações do systemd
+sudo systemctl daemon-reload
+
+#Habilite o timer para iniciar automaticamente com o sistema
+sudo systemctl enable monitoramento_nginx.timer
+
+
+#Inicie o time imediatamente
+sudo systemctl start monitoramento_nginx.timer
+
+# Monitoramento e Notificacaoes
+# Script para criar o monitoramento do site e enviar ao Slack
+sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_notificacao.sh
+#!/bin/bash
+
+# Verificar se a pasta que criamos monitoramento.log se não criar em log
+if [ ! -f "$LOGFILE" ]; then
+    sudo touch "$LOGFILE"
+    sudo chmod 666 "$LOGFILE"
+fi
+
+LOGFILE="/var/log/monitoramento.log"
+SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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" #Substituir pela URL do webhook do Slack 
+
+# Token para obter o IP público da instância AWS
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+PUBLIC_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4)
+
+# Nesta parte verificar se o IP público foi obtido com sucesso
+if [ -z "$PUBLIC_IP" ]; then
+    echo "$(date): erro ao obter o IP público da instância" >> $LOGFILE
+    exit 1
+fi
+
+# Definir a URL do site
+SITE_URL="http://$PUBLIC_IP"
+
+# Função para enviar notificação para o Slack
+send_slack_notification() {
+    message="$1"
+    payload="{\"text\": \"$message\"}"
+    curl -X POST -H "Content-type: application/json" --data "$payload" "$SLACK_WEBHOOK_URL"
+}
+
+# Obter o código HTTP da resposta
+response=$(curl -o /dev/null -s -w "%{http_code}" -I --connect-timeout 5 "$SITE_URL")
+
+# Verifica se o status é 000 ou diferente de 200
+if [ "$response" -eq 000 ] || [ "$response" -ne 200 ]; then
+    # Se o status for 000, define uma mensagem especial
+    if [ "$response" -eq 000 ]; then
+        response_message="Indisponível ou erro na requisição"
+    else
+        response_message="HTTP status: $response"
+    fi
+
+    log_message="$(date -u): $SITE_URL Site está fora do ar ($response_message)"
+    
+    # Registra no log
+    echo "$log_message" >> "$LOGFILE"
+    
+    # Envia alerta para o Slack
+    send_slack_notification "$log_message"
+fi
+EOF
+
+# Aqui tornaremos o script executável
+sudo chmod +x /usr/local/bin/monitoramento_notificacao.sh
+
+# Comando para instalar o cron
+sudo apt install cron -y
+
+# Aqui adicionar a tarefa cron para rodar a cada 1 minuto
+(sudo crontab -l 2>/dev/null; echo "* * * * * /usr/local/bin/monitoramento_notificacao.sh") | sudo crontab -
+
+# Execute o comando para iniciar o cron
+sudo service cron start
+
+```

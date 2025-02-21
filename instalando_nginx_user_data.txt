@@ -215,7 +215,7 @@ sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_web.sh
 
 SERVICE="nginx"
 
-#ver se o Nginx está rodando
+#verificar se o Nginx está rodando
 if ! systemctl is-active --quiet $SERVICE; then
         echo "$(date): Nginx parou! reiniciando..." >> /var/log/monitoramento.log
         systemctl restart $SERVICE
@@ -261,7 +261,6 @@ Unit=servico_monitoramento_nginx.service
 WantedBy=timers.target
 EOF
 
-
 #Recarregue as configurações do systemd
 sudo systemctl daemon-reload
 
@@ -272,13 +271,12 @@ sudo systemctl enable monitoramento_nginx.timer
 #Inicie o time imediatamente
 sudo systemctl start monitoramento_nginx.timer
 
-
 # Monitoramento e Notificacaoes
 # Script para criar o monitoramento do site e enviar ao Slack
 sudo sh -c cat << 'EOF' > /usr/local/bin/monitoramento_notificacao.sh
 #!/bin/bash
 
-# Verificar se a pasta que criamos monitoramento.log se não cria em log
+# Verificar se a pasta que criamos monitoramento.log se não criar em log
 if [ ! -f "$LOGFILE" ]; then
     sudo touch "$LOGFILE"
     sudo chmod 666 "$LOGFILE"

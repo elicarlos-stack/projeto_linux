@@ -1,0 +1,10 @@
+[Unit]
+Description=Executar o monitoramento do Nginx a cada 1 minuto
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=1min
+Unit=servico_monitoramento_nginx.service
+
+[Install]
+WantedBy=timers.target
