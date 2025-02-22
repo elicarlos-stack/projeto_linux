@@ -8,7 +8,7 @@ Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo ha
 
 ## Contato
 - <a href="https://www.linkedin.com/in/elicarlos-amorim"><img src="https://github.com/user-attachments/assets/f29b36c0-ca83-4864-8e95-d8d27506b274" width="20"> LinkedIn</a>
-- <a href="https://www.linkedin.com/in/elicarlos-amorim"><img src="https://github.com/user-attachments/assets/f29b36c0-ca83-4864-8e95-d8d27506b274" width="20"> GitHub</a>
+- <a href="https://github.com/elicarlos-stack"><img src="https://github.com/user-attachments/assets/f29b36c0-ca83-4864-8e95-d8d27506b274" width="20"> GitHub</a>
 
 
 <hr>
