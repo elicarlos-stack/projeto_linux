@@ -4,11 +4,11 @@
 Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo habilidades em Linux, AWS e automação de processos na Compass.Uol.
 
 ## Projetos
-- Configuração de Servidor Web Monitorado com automação de Processos com Scripts Bash.
+- Configuração de Servidor Web Monitorado com Automação de Processos com Scripts Bash.
 
 ## Contato
 - <a href="https://www.linkedin.com/in/elicarlos-amorim"><img src="https://github.com/user-attachments/assets/f29b36c0-ca83-4864-8e95-d8d27506b274" width="20"> LinkedIn</a>
-- <a href="https://github.com/elicarlos-stack"><img src="https://github.com/user-attachments/assets/b91af8d3-fdb4-45d5-a09f-f046699828b2" width="20"> GitHub</a>
+- <a href="https://github.com/elicarlos-stack"><img src="https://github.com/user-attachments/assets/e2064dea-f32c-4782-a75d-2273f010e24f" width="20"> GitHub</a>
 
 <hr>
 
@@ -18,33 +18,24 @@ Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo ha
  <img src="https://github.com/user-attachments/assets/5f1ff0b7-4dce-4a0b-b0f9-11de88c85c44" width="500px" hight="400">
 </div>
 
-
 # <h1 align="center">Configuração de Servidor Web com Monitoramento</h1>
+
 <p align="center"><img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/></p>
 
 
-
 ## :pushpin: Descrição do projeto:
-Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. Ao seguir este guia, você adquirirá conhecimentos em:
-
-Utilização do AWS: Como hospedar e gerenciar servidores na plataforma AWS.
-
-Configuração de Servidores Linux: Como instalar e configurar um servidor web utilizando Linux.
-
-Implementação de Serviços de Monitoramento: Técnicas para garantir a disponibilidade e o desempenho do servidor.
+Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. voçê irá utilizar os serviços da AWS para hospedar e gerenciar servidores em uma instância EC2. instalar e configurar um servidor web utilizando Linux. Também realizara a implementação de Serviços de Monitoramento utilizando técnicas para garantir a disponibilidade e o desempenho do servidor.
 
 
-## Ferramentas e Tecnologias
+## :hammer: Ferramentas e Tecnologias Utilizadas:
 - **Linux (Debian12)**
 - **AWS Cloud**
 - **Vscode**
 - **Slack**
 - **Scripts Bash**
 
-### Etapa 1: Configuração do Ambiente:
-
-Primeiro crie uma VPC na AWS com 2 subnets publicas e 2 subnets privadas. Localize na barra de pesquisar por VPC para criar as subnets:
-depois clique em create VPC.
+## Etapa 1: Configuração do Ambiente :hammer_and_wrench:
+Antes de criarmos a nossa Instância EC2 primeiramente vamos criar uma VPC na AWS com 2 subnets públicas e 2 subnets privadas. A VPC é um serviço da AWS que permite criar uma rede virtual isolada dentro da infraestrutura da AWS, para isto com o console aberto da Amazon AWS localize na barra de pesquisar por VPC para criar as subnets, depois clique em create VPC ou selecione Your VPCs (suas VPCs) e criar VPC.
 
 <img src="img/img_vpc1.png" alt="Imagem inicial EC2">
 
@@ -160,8 +151,9 @@ Exemplo:
 
 <img src="img/acessossh.png" alt="">
 
+<hr>
 
-## Etapa 2: Configuração do Servidor
+## Etapa 2: Configuração do Servidor :computer:
 
 ### 1 - Instalar o Servidor Nginx
 
@@ -271,7 +263,7 @@ Type=simple
 User=root
 ```
 
-## Etapa 3:
+## Etapa 3: Monitoramento e Notificações Tarefas :mag_right:
 
 Ter um site e não monitorar sua disponibilidade pode ser arriscado, pois você pode perder visitantes 
 ao seu site e possíveis clientes sem perceber problemas em seu Servidor. Monitorar é essencial para 
@@ -306,10 +298,6 @@ comando <b>sudo chmod 644 /var/log/monitoramento.log</b> para alterar permissõe
 execute o comando para mudar a propriedade de um arquivo ou diretório para o usuário atual <b>sudo chown $USER:$USER /var/log/monitoramento.log</b>
 
 <img src="img/monitoramento_log2.png" alt=""></br>
-
-
-
-
 
 
 Para confirmar se o site responde corretamente a uma requisição HTTP podemos usar o comando no terminal Debian na AWS, 
@@ -447,7 +435,7 @@ Agora digite o comando para iniciar o timer imediatamente com
 **sudo systemctl start monitoramento_nginx.timer**
 
 
-Etapa 4 - Automação e testes:
+## Etapa 4 - Automação e Testes: :robot:
 
 Para testar a implementação e verificar se está funcional vamos checar se o site está acessível via navegador. Copie o IP Public IPv4 address da nossa instancia criada na AWS, para encontrar o ip va em EC2, instance, selecione a instancia criada e na aba Details(detalhes) procure pelo ip publico Ipv4 copie cole no navegador e verifique se o site esta acessivel. no nosso exemplo o site é mostrado conforme a imagem a baixo, confirmando o funcionamento do Nginx de servir a pagina do site.
 
