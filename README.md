@@ -8,7 +8,7 @@ Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo ha
 
 ## Contato
 - [![LinkedIn](https://image.flaticon.com/icons/png/512/174/174857.png)](www.linkedin.com/in/elicarlos-amorim)
-- [![GitHub](https://image.flaticon.com/icons/png/512/25/25231.png)](https://github.com/seuusuario)
+- [![GitHub](https://github.com/user-attachments/assets/b91af8d3-fdb4-45d5-a09f-f046699828b2)](https://github.com/seuusuario)
 
 <hr>
 
