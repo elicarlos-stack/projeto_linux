@@ -1,10 +1,32 @@
-# <h1 align="center">Configuração de Servidor Web com Monitoramento</h1>
 
-## Configuração de Servidor Web com Monitoramento
+# <h1 align="center">Configuração de Servidor Web com Monitoramento</h1>
+<p align="center"><img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/></p>
+
+
+
+## :pushpin: Descrição do projeto:
+Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. Ao seguir este guia, você adquirirá conhecimentos em:
+
+Utilização do AWS: Como hospedar e gerenciar servidores na plataforma AWS.
+
+Configuração de Servidores Linux: Como instalar e configurar um servidor web utilizando Linux.
+
+Implementação de Serviços de Monitoramento: Técnicas para garantir a disponibilidade e o desempenho do servidor.
+
 
 ## Ferramentas utilizadas
 
-**Aplicações utilizadas :** AWS, Vscode, Linux (Debian12).
+**Ferramentas e Aplicações Utilizadas:**
+
+- AWS Cloud
+
+- Vscode
+
+- Linux (Debian12)
+
+- Scripts Bash
+
+- Slack
 
 ### Etapa 1: Configuração do Ambiente:
 
