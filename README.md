@@ -1,8 +1,21 @@
+# 🙋‍♂️ Olá, meu nome é Elicarlos, Bem-vindo ao Meu Perfil no GitHub! 
+
+## Sobre Mim
+Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo habilidades em Linux, AWS e automação de processos na Compass.Uol.
+
+## Projetos
+- Configuração de Servidor Web Monitorado com automação de Processos com Scripts Bash.
+
+## Contato
+- [![LinkedIn](https://image.flaticon.com/icons/png/512/174/174857.png)](www.linkedin.com/in/elicarlos-amorim)
+- [![GitHub](https://image.flaticon.com/icons/png/512/25/25231.png)](https://github.com/seuusuario)
+
+<hr>
 
 <div align="center">
  <img src="https://github.com/user-attachments/assets/eeb8aec4-21cc-454a-9c00-81d2b52d1ded" width="500px" hight="400">
 
- <img src="https://github.com/elicarlos-stack/projeto_linux/issues/3#issuecomment-2676217122" width="500px" hight="400">
+ <img src="https://github.com/user-attachments/assets/5f1ff0b7-4dce-4a0b-b0f9-11de88c85c44" width="500px" hight="400">
 </div>
 
 
@@ -21,19 +34,12 @@ Configuração de Servidores Linux: Como instalar e configurar um servidor web u
 Implementação de Serviços de Monitoramento: Técnicas para garantir a disponibilidade e o desempenho do servidor.
 
 
-## Ferramentas utilizadas
-
-**Ferramentas e Aplicações Utilizadas:**
-
-- AWS Cloud
-
-- Vscode
-
-- Linux (Debian12)
-
-- Scripts Bash
-
-- Slack
+## Ferramentas e Tecnologias
+- **Linux (Debian12)**
+- **AWS Cloud**
+- **Vscode**
+- **Slack**
+- **Scripts Bash**
 
 ### Etapa 1: Configuração do Ambiente:
 
