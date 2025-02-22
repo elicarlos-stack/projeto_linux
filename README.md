@@ -1,4 +1,8 @@
 
+<div align="center">
+ <img src="https://github.com/user-attachments/assets/efadf061-4d08-4d31-bd8a-c5bee4218368" width="700px" hight="500">
+</div>
+
 # <h1 align="center">Configuração de Servidor Web com Monitoramento</h1>
 <p align="center"><img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/></p>
 
