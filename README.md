@@ -1,12 +1,8 @@
 
 <div align="center">
- <img src="https://github.com/user-attachments/assets/efadf061-4d08-4d31-bd8a-c5bee4218368" width="700px" hight="500">
-</div>
+ <img src="https://github.com/user-attachments/assets/eeb8aec4-21cc-454a-9c00-81d2b52d1ded" width="500px" hight="400">
 
-<div align="center">
- <img src="[https://github.com/user-attachments/assets/efadf061-4d08-4d31-bd8a-c5bee4218368](https://github.com/user-attachments/assets/eeb8aec4-21cc-454a-9c00-81d2b52d1ded)" width="700px" hight="500">
-
- <img src="[https://github.com/user-attachments/assets/efadf061-4d08-4d31-bd8a-c5bee4218368](https://github.com/user-attachments/assets/eeb8aec4-21cc-454a-9c00-81d2b52d1ded)" width="700px" hight="500">
+ <img src="https://github.com/elicarlos-stack/projeto_linux/issues/3#issuecomment-2676217122" width="500px" hight="400">
 </div>
 
 
