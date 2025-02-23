@@ -576,14 +576,6 @@ sudo ./monitoramento_web.sh
 ```
 
 
-
-
-
-
-
-
-
-
 ## Desafio Bônus:
 Para quem deseja se aprofundar mais:
 
