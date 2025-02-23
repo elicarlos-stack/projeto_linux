@@ -37,12 +37,12 @@ Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e 
 # Índice
 
 1. [Etapa 1: Configuração do Ambiente](#etapa-1-configuração-do-ambiente)
-2. [Configuração do Servidor](#etapa-2-configuração-do-servidor)
-3. [Monitoramento e Notificações](#etapa-3-monitoramento-e-notificações)
-4. [Automação e Testes](#etapa-4-automação-e-testes)
+2. [Configuração do Servidor](##etapa-2-configuração-do-servidor)
+3. [Monitoramento e Notificações](##etapa-3-monitoramento-e-notificações)
+4. [Automação e Testes](##etapa-4-automação-e-testes)
 
 
-## Etapa 1: Configuração do Ambiente :hammer_and_wrench:
+# Etapa 1: Configuração do Ambiente :hammer_and_wrench:
 Antes de criarmos a nossa Instância EC2 primeiramente vamos criar uma VPC na AWS com 2 subnets públicas e 2 subnets privadas. A VPC é um serviço da AWS que permite criar uma rede virtual isolada dentro da infraestrutura da AWS, para isto com o console aberto da Amazon AWS localize na barra de pesquisar por VPC para criar a VPC logo após criaremos as subnets, depois clique em create VPC ou selecione Your VPCs (suas VPCs) e criar VPC.
 
 
@@ -507,101 +507,79 @@ sudo systemctl start monitoramento_nginx.timer**
 
 ## Etapa 4 - Automação e Testes: :robot:
 
-Para testar a implementação e verificar se está funcional vamos checar se o site está acessível via navegador. Copie o IP Public IPv4 address da nossa instancia criada na AWS, para encontrar o ip va em EC2, instance, selecione a instancia criada e na aba Details(detalhes) procure pelo ip publico Ipv4 copie cole no navegador e verifique se o site esta acessivel. no nosso exemplo o site é mostrado conforme a imagem a baixo, confirmando o funcionamento do Nginx de servir a pagina do site.
+Para testar a implementação e verificar se está funcional, vamos checar se o site está acessível via navegador. Copie o "Endereço IP Público IPv4" da nossa instância criada na AWS. Para encontrar o IP, vá em EC2, instâncias, selecione a instância criada e, na aba "Detalhes" (Details), procure pelo IP público IPv4. Copie e cole no navegador e verifique se o site está acessível. No nosso exemplo, o site é mostrado conforme a imagem abaixo, confirmando o funcionamento do Nginx em servir a página do site.
+<br>
 
 <img src="img/site.png" alt="">
 
-Agora vamos fazer testes para verificar se ao parar o Nginx o nosso script detecta e envia alertas corretamente.
-para isto vamos chegar o status do Nginx digitanto **sudo systemctl status nginx** 
+Agora vamos fazer testes para verificar se ao parar o Nginx o nosso script detecta e envia alertas corretamente. para isto vamos chegar o status do Nginx digitanto **sudo systemctl status nginx** 
 
+```
+sudo systemctl status nginx
+```
+Imagem da verificação do Status do Nginx:
 <img src="img/teste1.png" alt="">
 
 
-agora pare o servidor com **systemctl stop nginx**
+Pare o Nginx para testar:
+Agora pare o servidor com **systemctl stop nginx**. Espere 1 minuto e veja se ele foi reiniciado automaticamente:
+
+```
+sudo systemctl stop nginx
+```
 
 <img src="img/teste2.png" alt="">
 
-perceba que ao parar o Nginx e checar o status na mensagem "Active: inactive" esta como inativo. nosso servidor parou, logo apos se o script estiver funcional e digitar o comando de status novamente ele tera que estar "ativo" e servindo a pagina(site) corretamente. 
+Perceba que, ao parar o Nginx e checar o status, a mensagem "Active: inactive" indica que ele está inativo. Nosso servidor parou. Após 1 minuto, que foi o tempo definido para reiniciar no nosso script, se o script estiver funcional, ao digitar o comando de status novamente, ele deverá estar "ativo" e servindo a página (site) corretamente.
 
 <img src="img/teste3.png" alt="">
-<img src="img/teste4.png" alt="">
 
 
-Criar uma documentação no GitHub explicando:
-Como configurar o ambiente.
-Como instalar e configurar o servidor web.
-Como funciona o script de monitoramento.
-Como testar e validar a solução.
+### Verificar o Arquivo de Log:
 
+Para validar, verifique se o arquivo de log está sendo criado e atualizado corretamente. Podemos analisar a pasta criada para armazenamento dos logs. Navegue pelo diretório onde são armazenados os logs com o comando **cd /var/log** e inspecione o arquivo "monitoramento.log" com o comando "cat" para mostrar o conteúdo do arquivo. Observe que, na imagem capturada dos nossos logs, o Nginx parou e, logo após, foi reiniciado, comprovando o funcionamento do nosso script.
 
-
-
-Verifique se o timer está rodando:
-
-bash
-
-sudo systemctl list-timers --all
-Você deve ver nginx_monitor.timer na lista, com a próxima execução marcada para o próximo minuto.
-
-Pare o Nginx para testar:
-
-bash
-
-sudo systemctl stop nginx
-Espere 1 minuto e veja se ele foi reiniciado automaticamente:
-
-bash
-
-systemctl status nginx
-Verifique os logs do monitoramento:
-
-bash
-
-cat /var/log/nginx_monitor.log
 Se tudo estiver funcionando, você verá registros indicando que o Nginx foi reiniciado.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Verificar e Testar
-Executar o Script Manualmente:
-
-Execute o script manualmente para verificar se ele está funcionando e enviando notificações:
-
-bash
-sudo ./monitoramento_web.sh
-
-
-Verificar Notificações no Slack:
-
-Abra o canal do Slack onde você configurou o webhook e verifique se recebeu uma notificação indicando o status do site.
-
-
-
-Verificar o Arquivo de Log:
-
-Verifique se o arquivo de log está sendo criado e atualizado corretamente:
-
-bash
+```
 cat /var/log/monitoramento.log
+```
+<img src="img/teste3.1.png" alt="">
+
+
+Enquanto aguardamos o reinicio automatico do Servidor podemos analizar se o "Timers" criado está funcional e monitorando a cada 1 minuto com:
+```
+sudo systemctl list-timers --all
+```
+:eyes: Você deve ver nginx_monitor.timer na lista, com a próxima execução marcada para o próximo minuto.
+<br>
+
+Apos o periodo de 1 minuto execute novamente o comando para ver o Status como "active".
+
+<img src="img/teste4.png" alt="">
+
+### Verificar Notificações no Slack:
+
+Abra o canal do Slack onde você configurou o webhook e verifique se recebeu uma notificação indicando o status do site. Observe que uma notificação foi enviada informando sobre o "Site está fora do ar", conforme a mensagem configurada para ser enviada pelo servidor quando ele sofrer uma parada. Isso confirma que as configurações estão funcionais e notificando corretamente.
+
+<img src="teste5.png" alt="">
+
+Em seguida, abra o site no navegador e verifique se consegue acessá-lo normalmente. Conforme mostrado na imagem abaixo, o site está acessível.
+
+<img src="img/teste6.png" alt="">
+
+### Verificar e Testar Executando o Script Manualmente:
+Você também pode realizar o teste manual e verificar se ele responde enviando uma notificação ao Slack. Execute o script manualmente para verificar se ele está funcionando e enviando notificações:
+
+```
+sudo ./monitoramento_web.sh
+```
+
+
+
+
+
+
 
 
 
@@ -609,11 +587,12 @@ cat /var/log/monitoramento.log
 ## Desafio Bônus:
 Para quem deseja se aprofundar mais:
 
-Automação com User Data na (AWS):
+### Automação com User Data na (AWS):
 Podemos configurar a EC2 para já iniciar com Nginx, HTML e script de monitoramento via User Data.
- 
-basta organizar o arquivo da seguinte maneira e adicionar na hora de criar uma instancia. exemplo: em EC2 ir em Instances, Lauch Instance(criar instancia) conforme ensinado no inicio do projeto como criar instanciana EC2, depois de ter colocoado as especificações em Advanced details expanda a flag no final terá um campo de "User data - optional" copie o arquivo abaixo e cole no campo depois clique em criar sua instancia (Lauch instance) pronto ao executar a insancia ela sera carregada com Nginx, HTML e script de monitoramento. deixarei tambem o arquivo disponivel nas pastas para consulta.
 
+Basta organizar o arquivo da seguinte maneira e adicioná-lo na hora de criar uma instância. Por exemplo: em EC2, vá em "Instances" e clique em "Launch Instance" (criar instância), conforme ensinado no início do projeto sobre como criar uma instância na EC2. Depois de ter colocado as especificações, em "Advanced details" (detalhes avançados), expanda a flag e, no final, haverá um campo de "User data - optional". Copie o arquivo abaixo e cole no campo. Depois, clique em "Launch instance" (criar instância). Pronto, ao executar a instância, ela será carregada com Nginx, HTML e o script de monitoramento. Também deixarei o arquivo disponível nas pastas para consulta.
+
+Script para inserção no "user data":
 ```
 #!/bin/bash
 # Projeto Linux
