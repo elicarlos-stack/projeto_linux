@@ -24,8 +24,8 @@ Sou estudante de Segurança da Informação, e atualmente estou desenvolvendo ha
 
 
 ## :pushpin: Descrição do projeto:
-Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. voçê irá utilizar os serviços da AWS para hospedar e gerenciar servidores em uma instância EC2. instalar e configurar um servidor web utilizando Linux. Também realizara a implementação de Serviços de Monitoramento utilizando técnicas para garantir a disponibilidade e o desempenho do servidor.
-
+<div style="text-align: justify">
+Este projeto tem como objetivo desenvolver e testar habilidades em Linux, AWS e automação de processos por meio da configuração de um ambiente de servidor web monitorado. voçê irá utilizar os serviços da AWS para hospedar e gerenciar servidores em uma instância EC2. instalar e configurar um servidor web utilizando Linux. Também realizara a implementação de Serviços de Monitoramento utilizando técnicas para garantir a disponibilidade e o desempenho do servidor.</div>
 
 ## :hammer: Ferramentas e Tecnologias Utilizadas:
 - **Linux (Debian12)**
