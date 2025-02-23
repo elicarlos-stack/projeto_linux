@@ -137,7 +137,9 @@ clique em Edite inbound rules. adicione o type como HTTP, source selecione MyIP,
 adicione novamente para type SSH source MyIP e Salve(save rules).</div>
 
 <br>
+
 ❗ (Obs: como o IP da instância está publico ao selecionar o Source como MyIP pode estar diferente da imagem mostrada aqui).
+
 <br>
 
 <img src="img/securitygroupssh.png" alt="" />
@@ -153,7 +155,10 @@ Agora selecione a aba SSH e copie ou digite o comando para conetar a instancia v
 
 Exemplo:
 
-``` ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância" ```, na tela do terminal confirme com "yes" e acesse a maquina.
+```
+ssh -i "chave.pem" admin@"IP_Public_IPv4_da_instância"
+```
+na tela do terminal confirme com "yes" e acesse a maquina.
 
 <img src="img/conectInstance.png" alt="">
 
@@ -161,84 +166,107 @@ Exemplo:
 
 <hr>
 
-Agora que temos acesso ao terminal da nossa instância, podemos realizar configurações e instalar o servidor de páginas web Nginx. O Nginx é um servidor web de código aberto e de alta performance que também funciona como proxy reverso e balanceador de carga.
+Na próxima etapa iremos realizar configurações e instalar o servidor de páginas web Nginx. O Nginx é um servidor web de código aberto e de alta performance que também funciona como proxy reverso e balanceador de carga.
 
 ## Etapa 2: Configuração do Servidor :computer:
 
 ### 1 - Instalar o Servidor Nginx
 
-Agora que estamos acessando terminal da nossa instancia AWS 
-vamos atualizar os pacotes para depois instalar o servidor NGINX, 
-para isso digite o comando:</br>
-<b>sudo apt update</b> conforme imagem abaixo.
+Agora que estamos acessando terminal da nossa instancia AWS vamos atualizar os pacotes para depois instalar o servidor NGINX, para isso digite o comando conforme imagem abaixo:
+```
+sudo apt update
+```
 
 <img src="img/nginx1.png" alt="">
 
-Outra etapa é instalar as dependências necessárias e transferir dados para o servidor, 
-chave GPG, ca-certificates e lsb-release para fornecer informações da distribuição 
-Linux instalada para isto use:</br>
-**sudo apt install -y curl gnupg2 ca-certificates lsb-release**.
+Outra etapa é instalar as dependências necessárias e transferir dados para o servidor. Essas dependências incluem a chave GPG, ca-certificates e lsb-release, que fornecem informações sobre a distribuição Linux instalada. Para fazer isso, use o comando:</br>
 
-Logo após execute o comando para adicionar a chave de assinatura e configurar o repositorio do Nginx, 
-observe que ao adicionar criamos e salvamos o arquivo em nginx.list.
+```
+sudo apt install -y curl gnupg2 ca-certificates lsb-release
+```
 
-comando para baixar a assinatura: **curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -**
+Logo após execute o comando para adicionar a chave de assinatura e configurar o repositorio do Nginx, observe que ao adicionar criamos e salvamos o arquivo em "nginx.list". comando para baixar a assinatura: 
+
+```
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -**
+```
  
-depois execute: **echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list**
+depois execute: **echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list** para que adicione o repositório oficial do Nginx ao arquivo de fontes de pacotes.
 
-para que adicione o repositório oficial do Nginx ao arquivo de fontes de pacotes.
+```
+echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list
+```
 
-Atualize a lista de pacotes com <b>sudo apt update</b>.
+Atualize a lista de pacotes com **sudo apt update**.
+```
+sudo apt update
+```
+
+Exemplo demostrado na imagem:
 
 <img src="img/nginx2.png" alt="">
 
-Execute **sudo apt install nginx -y** para instalar o servidor.
+Execute **sudo apt install nginx -y** para instalar o servidor. o **-y** irá confirmar automaticamente sem precisar perguntar se deseja instalar pacotes. 
+
+```
+sudo apt install nginx -y
+```
 
 <img src="img/nginx-install.png" alt="">
 
-Consulte se o nginx foi instalado pesquisando sobre a versão com **sudo nginx -v**.
+Consulte se o nginx foi instalado pesquisando sobre a versão com **sudo nginx -v**. ative o Nginx para iniciar:
 
-ative o Nginx para iniciar **sudo systemctl enable nginx**.
+```
+sudo systemctl enable nginx
+```
 
 <img src="img/nginx3.png" alt="">
 
 ### 2 - Criar uma pagina HTML simples.
 
-Agora com o NGINX instalado vamos criar nossa pagina HTML simples, 
-para isto navegue até o diretorio que serve a pagina html do nosso Servidor 
-em <b>cd /usr/share/ngin/html</b> verifique o arquivo index.html, caso queiro 
-salve o arquivo original com o nome index.html.original e crie um novo index.html 
-com o comando <b>sudo nano index.html</b> e digite ou cole o seu codigo HTML depois salve o arquivo.
+Agora, com o Nginx instalado, vamos criar nossa página HTML simples. Para isso, navegue até o diretório que serve a página HTML do nosso servidor com o comando **cd /usr/share/nginx/html**. Verifique o arquivo "index.html". Se quiser, salve o arquivo original com o nome "index.html.original" e crie um novo "index.html" com o comando sudo nano index.html. Digite ou cole o seu código HTML e depois salve o arquivo. Deixarei um exemplo de pagina html para teste na pasta "Site".
+
+```
+cd /usr/share/nginx/html
+sudo nano index.html
+```
 
 <img src="img/criando_pg_html.png" alt="">
 
-podemos usar o comando **cd /usr/share/nginx/html | cat index.html**
- para verificar se o conteudo foi criado.
+podemos usar o comando **cd /usr/share/nginx/html | cat index.html** para verificar se o conteudo foi criado.
+```
+cd /usr/share/nginx/html | cat index.html
+```
 
 Ative o nginx com **sudo systemctl enable nginx --now** depois verifique se o nginx está ativo e servindo a pagina corretamente.
+```
+sudo systemctl enable nginx --now
+```
 
 <img src="img/ativando-nginx.png" alt="">
 
-Abra o terminal e digite o http://"ip_da_instancia_publica"
+Abra um navegador de preferência, pode ser Firefox, Chrome, Edge e digite o **http://"ip_da_instancia_publica"**
+
 <img src="img/pg-html-ok.png" alt="">
 
+<br>
 
-Caso o Servidor sofra uma parada repentina podemos criar um serviço systemd para 
-garantir que o Nginx reinicie automaticamente. 
-antes de criarmos um arquivo de serviço para garantir que o Nginx seja reiniciado automaticamente
-vamos criar um arquivo que verifica se o Nginx está rodando, para isto navegue até o direotio **/bin** 
-para criar o arquivo chamado "monitoramento_web.sh", digite o comando cd para ir ate o diretorio exemplo:
-cd /usr/local/bin, aqui utilize o **sudo nano monitoramento_web.sh** como na imagem abaixo 
-para criar o arquivo de monitoramento.
+Caso o servidor sofra uma parada repentina, podemos criar um serviço systemd para garantir que o Nginx reinicie automaticamente. Antes de criarmos um arquivo de serviço para garantir que o Nginx seja reiniciado automaticamente, vamos criar um arquivo que verifica se o Nginx está rodando. Para isso, navegue até o diretório **/bin** para criar o arquivo chamado "monitoramento_web.sh". Digite o comando "cd" para ir até o diretório, exemplo: **cd /usr/local/bin**. Em seguida, utilize o comando **sudo nano monitoramento_web.sh** para criar o arquivo de monitoramento.
+
+```
+cd /usr/local/bin
+sudo nano monitoramento_web.sh
+```
 
 <img src="img/monitoramento_web1.png" alt="">
 
+script de shell Bash que verifica se o Nginx está rodando:
 ```
 #!/bin/bash
 
 SERVICE="nginx"
 
-#ver se o Nginx está rodando
+# Verificar se o Nginx está em execução.
 if ! systemctl is-active --quiet $SERVICE; then
         echo "$(date): Nginx parou! reiniciando..." >> /var/log/monitoramento.log
         systemctl restart $SERVICE
@@ -252,16 +280,20 @@ if ! systemctl is-active --quiet $SERVICE; then
 fi
 ```
 
-altere as permissoes de execução do script digitando o comando 
-**sudo chmod +x /usr/local/bin/monitoramento_web.sh**, o "chmod +x" 
-permite alterar para ter permissões de execução.
+altere as permissoes de execução do script digitando o comando **sudo chmod +x /usr/local/bin/monitoramento_web.sh**, o "chmod +x" permite alterar para ter permissões de execução.
+```
+sudo chmod +x /usr/local/bin/monitoramento_web.sh
+```
+Agora criaremos um serviço systemd para garantir que o "Nginx" reinicie automaticamente. Para isso, vá até o diretório "/etc/systemd/system" com o comando **cd /etc/systemd/system**. Crie um arquivo com o nome "servico_monitoramento_nginx.service" digitando **sudo nano servico_monitoramento_nginx.service**. Em seguida, digite o código abaixo conforme a imagem:
 
-Agora criaremos um serviço systemd para garantir que o Nginx reinicie automaticamente, para isto va ate o diretorio 
-**cd /etc/systemd/system** crie um arquivo com nome "system/servico_monitoramento_nginx.service" digitando 
-**sudo nano servico_monitoramento_nginx.service** e digite o codigo abaixo conforme a imagem:
+```
+cd /etc/systemd/system
+sudo nano servico_monitoramento_nginx.service
+```
 
 <img src="img/servico_monitoramento_nginx1.png" alt="">
 
+Esta configuração garante que o script monitoramento_web.sh será executado para verificar e reiniciar o Nginx automaticamente:
 ```
 [Unit]
 Description=Monitoramento do Nginx
@@ -280,61 +312,62 @@ ao seu site e possíveis clientes sem perceber problemas em seu Servidor. Monito
 garantir a estabilidade e resolver falhas rapidamente. Então vamos criar um script que verifique a 
 disponibilidade do site.
 
-crie um script em Bash ou Python para monitorar a disponibilidade do site. 
+Antes disso vamos criar uma conta no Slack que é uma plataforma de comunicação e colaboração projetada para equipes e empresas. para criar uma conta no Slack e instalar a API Webhook acesse o site do Slack clique em Começar para criar uma conta. informe um e-mail e será enviado um codigo no seu email, informe o codigo. ao acessar o site voçê pode criar um workspace.
 
-Antes disso vamos criar uma conta no Slack que é uma plataforma de comunicação e colaboração projetada para equipes e empresas.
-
-para criar uma conta no Slack e instalar a API Webhook acesse o site do Slack clique em Começar para criar uma conta. 
-informe um e-mail e será enviado um codigo no seu email, informe o codigo. ao acessar o site voçê pode criar um workspace.
 <img src="img/slack1.png" alt=""></br>
-Na proxima tela informe o nome da empresa ou equipe.
 
-Agora para instalar a API Webhooke acesse o site https://api.slack.com/apps . depois habilite Incoming Webhooks em features, 
+Na proxima tela informe o nome da empresa ou equipe. Agora para instalar a API Webhooke acesse o site https://api.slack.com/apps . depois habilite Incoming Webhooks em features, 
 e ative a opção Incoming Webhooks.
 
 <img src="img/slack2.png" alt=""></br>
 
-Adicione um novo Webhook ao workspace clique em "Add New Webhook to Workspace" e escolha o canal onde as mensagens serão postadas. 
-No nosso exemplo crie um Channel com nome de "projetolinux". Copie a URL do Webhook para informar no script a 
-variável "SLACK_WEBHOOK_URL". o webhook do Slack permite que o script envie notificações para um canal específico no Slack.
+Adicione um novo Webhook ao workspace clique em "Add New Webhook to Workspace" e escolha o canal onde as mensagens serão postadas. No nosso exemplo crie um Channel com nome de "projetolinux". Copie a URL do Webhook para informar no script a variável "SLACK_WEBHOOK_URL". o webhook do Slack permite que o script envie notificações para um canal específico no Slack. Vamos criar também um log para armazenar logs das verificações de disponibilidade do site. para isto crie em **cd /var/log** o arquivo **monitoramento.log** execute o comando sudo com o <b>touch</b>, o touch irá criar um arquivo em branco. depois execute o comando abaixo para alterar permissões de leitura. 
 
-Vamos criar também um log para armazenar logs das verificações de disponibilidade do site. para isto crie 
-em <b>cd /var/log</b> o arquivo <b>monitoramento.log</b>
-execute o comando sudo com o <b>touch</b>, o touch irá criar um arquivo em branco. depois execute o 
-comando <b>sudo chmod 644 /var/log/monitoramento.log</b> para alterar permissões.  
+```
+sudo chmod 644 /var/log/monitoramento.log
+```   
 
-<img src="img/monitoramento_log1.png" alt=""></br>
+<img src="img/monitoramento_log1.png" alt="">
+</br>
 
-execute o comando para mudar a propriedade de um arquivo ou diretório para o usuário atual <b>sudo chown $USER:$USER /var/log/monitoramento.log</b>
+execute o comando para mudar a propriedade de um arquivo ou diretório para o usuário atual:
 
-<img src="img/monitoramento_log2.png" alt=""></br>
+```
+sudo chown $USER:$USER /var/log/monitoramento.log
+```
+<br>
 
+<img src="img/monitoramento_log2.png" alt="">
 
-Para confirmar se o site responde corretamente a uma requisição HTTP podemos usar o comando no terminal Debian na AWS, 
-digite o comando curl como exemplo **curl -I http://"seu_ip"**, o coamndo <b>curl</b> é utilizado para obter o cabeçalho se combinado com a opção <b>-I<b> 
-faz com que apenas seja mostrado o cabeçalho da resposta HTTP.
+</br>
 
-Para realizar apenas um teste temos que alterar as regras de saida em Outbound rules para permitir 
-que façamos o teste afim de verificar se o site responde coretamente a uma requisição. entao para isto devemos 
-ir na console da AWS -> Security Groups selecionar nosso security group criado com o nome de "MyDevWeb", na aba de Outbound rules 
-clique em editar outbound rules -> add role -> Type selecione "All trafique" -> Destination "My IP" e salve a regra.
+Para confirmar se o site responde corretamente a uma requisição HTTP podemos usar o comando no terminal Debian na AWS, digite o comando curl como exemplo **curl -I http://"seu_ip"**, o comando "curl" é utilizado para obter o cabeçalho se combinado com a opção **-I** faz com que apenas seja mostrado o cabeçalho da resposta HTTP.
+
+Para realizar apenas um teste temos que alterar as regras de saida em Outbound rules para permitir que façamos o teste afim de verificar se o site responde coretamente a uma requisição. então para isto devemos ir na console da AWS -> Security Groups selecionar nosso security group criado com o nome de "MyDevWeb", na aba de Outbound rules clique em editar outbound rules -> add role -> Type selecione "All trafique" -> Destination "My IP" e salve a regra.<br>
 
 <img src="img/outbound.png" alt="">
+<br>
 <img src="img/outbound3.png" alt="">
-
+<br>
 
 De volta no terminal digite o comando  **curl -I http://"seu_ip"** mencionado acima e verifique se a consulta retorna "HTTP/1.1 200 OK"
 conforme a imagem abaixo. 
 
 <img src="img/outbound2.png" alt="">
 
+### :page_with_curl: crie um script em Bash para monitorar a disponibilidade do site:
 
-Agora vamos criar um script para monitorar e enviar notificações para o serviço Slack se detectar indisponibilidade.
-navegue ate o diretorio **/usr/local/bin** onde são armazenados os executáveis de programas.
-digite **sudo nano monitoramento_notificacao.sh** para criar o Script de envio e notificação. 
+Agora vamos criar um script para monitorar e enviar notificações para o serviço Slack se detectar indisponibilidade. navegue ate o diretorio **/usr/local/bin** onde são armazenados os executáveis de programas. digite **sudo nano monitoramento_notificacao.sh** para criar o Script de envio e notificação. 
 digite o script fornecido conforme a imagem abaixo e salve o arquivo:
 
+```
+sudo nano monitoramento_notificacao.sh
+```
+
 <img src="img/" alt=""> 
+<br>
+
+script para monitorar e enviar notificações para o serviço Slack se detectar indisponibilidade:
 
 ```
 #!/bin/bash
@@ -395,32 +428,52 @@ fi
 Após criar e verificar o script salve o arquivo e execute o comando **sudo chmod +x /usr/local/bin/monitoramento_notificacao.sh** 
 para tornar o script executavel.
 
+```
+sudo chmod +x /usr/local/bin/monitoramento_notificacao.sh
+```
 
-Agora vamos criar uma tarefa com o "Cron" para executar o script a cada minuto, para isto execute o comando: 
-**sudo contrab -e** para editar as tarefas. por padrão o Cron não vem instalado em distribuições linux para 
-instalar execute o comando **sudo apt install cron -y**. 
+Agora vamos criar uma tarefa com o "Cron" para executar o script a cada minuto, para isto execute o comando: **sudo contrab -e** para editar as tarefas. por padrão o Cron não vem instalado em distribuições linux para instalar execute o comando **sudo apt install cron -y**. 
 
+```
+sudo contrab -e
+```
+
+```
+sudo apt install cron -y
+```
 <img src="img/cron1.png" alt="">
+<br>
 
-apos instalação edite o "cron" com **crontab -e**, irá abrir a tela de seleção do editor escolha um, neste exemplo escolhi o "nano" digitando 1, no editor adicione a seguinte linha no final do arquivo:<b>* * * * * /usr/local/bin/monitoramento_web.sh<b>
-ela é representada por astericos que na ordem corresponde ao minuto, Hora, Dia do Mes, Mes, Dia da Semana - juntos 
-significa que vai ser executadoa cada minuto seguido do caminho do script criado monitoramento.sh, salve o arquivo. 
-para vizualizar se o arquivo foi adicionado execute o listar com **crontab -l**
+Após a instalação, edite o "cron" com **crontab -e**. Isso abrirá a tela de seleção do editor; escolha um. Neste exemplo, escolhi o "nano" digitando 1. No editor, adicione a seguinte linha no final do arquivo:
+
+```
+* * * * * /usr/local/bin/monitoramento_web.sh
+```    
+Essa linha é representada por asteriscos que, na ordem, correspondem ao minuto, hora, dia do mês, mês e dia da semana. Juntos, significam que o script será executado a cada minuto, seguido do caminho do script criado "monitoramento_web.sh". Salve o arquivo. Para visualizar se o arquivo foi adicionado, execute **crontab -l**.<br>
+
 
 <img src="img/crontab.png" alt="">
 
-Execute o comando para iniciar o "Cron" **sudo service cron start**.
+Execute o comando para iniciar o "Cron".
+```
+sudo service cron start
+```
+
+No diretorio systemd/system também criaremos um "timer" para executar o serviço a cada 1 minuto e garantir que o Script de serviço "servico_monitoramento_nginx.service" 
+do Nginx reinicie automaticamente para executar o serviço a cada 1 minuto. Va até o diretorio **cd /etc/systemd/system** e crie o arquivo "monitoramento_nginx.timer" com **sudo monitoramento_nginx.timer**. conforme a imagem abaixo:
 
 
-No diretorio systemd/system também criaremos um "timer" 
-para executar o serviço a cada 1 minuto e garantir que o 
-Script de serviço "servico_monitoramento_nginx.service" 
-que o Nginx reinicie automaticamente para executar o serviço 
-a cada 1 minuto. Va até o diretorio **cd /etc/systemd/system** e
-crie o arquivo "monitoramento_nginx.timer" 
-com **sudo monitoramento_nginx.timer**. conforme a imagem abaixo:
+No diretório /etc/systemd/system, também criaremos um "timer" para executar o serviço a cada 1 minuto e garantir que o script de serviço "servico_monitoramento_nginx.service" reinicie automaticamente o Nginx. Para isso, vá até o diretório /etc/systemd/system com o comando **cd /etc/systemd/system** e crie o arquivo "monitoramento_nginx.timer" com **sudo nano monitoramento_nginx.timer**. Em seguida, digite o código abaixo conforme a imagem:
+
+```
+cd /etc/systemd/system
+sudo nano monitoramento_nginx.timer
+```
 
 <img src="img/monitoramento_nginx_timer.png" alt="">
+<br>
+
+Script Bash que monitora o Nginx a cada 1 minuto:
 
 ```
 [Unit]
@@ -435,15 +488,22 @@ Unit=servico_monitoramento_nginx.service
 WantedBy=timers.target
 ```
 
-logo após a criação recarregue as configurações do systemd com
-**sudo systemctl daemon-reload**
+logo após a criação recarregue as configurações do systemd com.
+
+```
+sudo systemctl daemon-reload**
+```
 
 também habilite o timer para iniciar automaticamente com o sistema
-**sudo systemctl enable monitoramento_nginx.timer**
+```
+sudo systemctl enable monitoramento_nginx.timer
+```
 
 Agora digite o comando para iniciar o timer imediatamente com
-**sudo systemctl start monitoramento_nginx.timer**
 
+```
+sudo systemctl start monitoramento_nginx.timer**
+```
 
 ## Etapa 4 - Automação e Testes: :robot:
 
