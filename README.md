@@ -113,6 +113,15 @@ Agora iremos editar em Routes para que elas tenham acesso a internet. ir em "edi
 
 <img src="img/associate_private1.png" alt="" />
 
+Vamos criar um grupo de segurança(Security group), nosso grupo de segurança irá atua como firewall virtual para as instâncias do EC2 para controlar o tráfego de entrada e de saída. 
+Para criar na console da AWS pesquise por EC2 ou digite na barra de pesquisa, procure por "Network & Security na lateral esquerda depois "criar security group" (Create security group), 
+Informe um nome, descrição é opcional e clique em criar.
+<br>
+<img src="img/securityGP.png" alt=""><br>
+<img src="img/securityGP1.png" alt=""><br>
+<img src="img/securityGP2.png" alt=""><br>
+
+
 ## :heavy_check_mark: Criar uma instancia EC2 :computer:
 
 Para criar uma instância EC2 na AWS, acesse a console da AWS e pesquise por EC2 ou vá até "Instances". Em seguida, procure por "Launch instance".
@@ -221,6 +230,10 @@ sudo systemctl enable nginx
 ```
 
 <img src="img/nginx3.png" alt="">
+<br>
+
+Verifique no navegador usando o Chrome, Edge ou outro navegador de preferencia e digitando o IP publico da Instância para vizualize a pagina padrão do Nginx ao carregar site.<br>
+<img src="img/pg_nginx.png" alt="">
 
 ### 2 - Criar uma pagina HTML simples.
 
@@ -551,7 +564,8 @@ Enquanto aguardamos o reinicio automatico do Servidor podemos analizar se o "Tim
 ```
 sudo systemctl list-timers --all
 ```
-:eyes: Você deve ver nginx_monitor.timer na lista, com a próxima execução marcada para o próximo minuto.
+:eyes: Você deve ver nginx_monitor.timer na lista, com a próxima execução marcada para o próximo minuto. o horario pode estar difernete dos testes. mas o objetivo aqui é mostrar o funcionamento do monitoramento a cada 1 minuto pelo arquivo "monitoramento_nginx.timer";
+<img src="img/timers.png" alt="">
 <br>
 
 Apos o periodo de 1 minuto execute novamente o comando para ver o Status como "active".
@@ -562,7 +576,7 @@ Apos o periodo de 1 minuto execute novamente o comando para ver o Status como "a
 
 Abra o canal do Slack onde você configurou o webhook e verifique se recebeu uma notificação indicando o status do site. Observe que uma notificação foi enviada informando sobre o "Site está fora do ar", conforme a mensagem configurada para ser enviada pelo servidor quando ele sofrer uma parada. Isso confirma que as configurações estão funcionais e notificando corretamente.
 
-<img src="teste5.png" alt="">
+<img src="img/teste5.png" alt="">
 
 Em seguida, abra o site no navegador e verifique se consegue acessá-lo normalmente. Conforme mostrado na imagem abaixo, o site está acessível.
 
@@ -856,7 +870,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable monitoramento_nginx.timer
 
 
-#Inicie o time imediatamente
+#Inicie o timer imediatamente
 sudo systemctl start monitoramento_nginx.timer
 
 # Monitoramento e Notificacaoes
