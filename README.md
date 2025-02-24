@@ -67,7 +67,7 @@ Em VPC setting você pode escolher por criar através do VPC only ou VPC and mor
 > As tags são opcionais, mas recomenda-se atribuir nomes a elas, pois ajudam a categorizar e organizar seus recursos na AWS.
 
 <div>
-<img src="img/img_privatesub1.png" alt="" />
+<img src="img/img_privatesub1.pngg" alt="" />
 
 <img src="img/img_privatesub2.png" alt="" />
 
@@ -98,7 +98,7 @@ Após a criação da tabela de roteamento, com a tabela de roteamento selecionad
 
 Agora em Routes, vamos editar a tabela de roteamento (Edit Routes). Clique em Edit e adicione uma nova rota. Para isso, clique em Add Route, insira 0.0.0.0/0 no campo Destination e selecione o Internet Gateway criado anteriormente no campo Target. Salve as mudanças.
 
-<img src="img/associate_subnet1.png" alt="" />
+<img src="img/associate_private1.png" alt="" />
 
 Agora para criar o NAT gateway para a subnet privada ter acesso a internet. para isto ir em NAT gateway informe um nome, selecione uma subnet public, aloque um Elastic Ip allocation ID. 
 logo apos criaremos a tabela de roteamento para o NET gateway e assossiar as subnets privadas.
@@ -377,7 +377,7 @@ digite o script fornecido conforme a imagem abaixo e salve o arquivo:
 sudo nano monitoramento_notificacao.sh
 ```
 
-<img src="img/" alt=""> 
+<img src="img/script-monitor.png" alt=""> 
 <br>
 
 script para monitorar e enviar notificações para o serviço Slack se detectar indisponibilidade:
@@ -594,9 +594,12 @@ sudo ./monitoramento_web.sh
 Para quem deseja se aprofundar mais:
 
 ### Automação com User Data na (AWS):
-Podemos configurar a EC2 para já iniciar com Nginx, HTML e script de monitoramento via User Data.
+Podemos configurar a EC2 para já iniciar com Nginx, HTML e script de monitoramento via "User Data".
 
 Basta organizar o arquivo da seguinte maneira e adicioná-lo na hora de criar uma instância. Por exemplo: em EC2, vá em "Instances" e clique em "Launch Instance" (criar instância), conforme ensinado no início do projeto sobre como criar uma instância na EC2. Depois de ter colocado as especificações, em "Advanced details" (detalhes avançados), expanda a flag e, no final, haverá um campo de "User data - optional". Copie o arquivo abaixo e cole no campo. Depois, clique em "Launch instance" (criar instância). Pronto, ao executar a instância, ela será carregada com Nginx, HTML e o script de monitoramento. Também deixarei o arquivo disponível nas pastas para consulta.
+<br>
+<img src="" alt="">
+
 
 Script para inserção no "user data":
 ```
@@ -942,3 +945,15 @@ sudo apt install cron -y
 sudo service cron start
 
 ```
+
+## Conclusão
+
+A elaboração deste projeto proporciona desenvolver o conhecimento técnico em Linux, AWS e automação através de Scripts, 
+também reforça a importância de monitorar continuamente os serviços para garantir a alta disponibilidade dos serviços 
+e rápida resposta a incidentes ao criar a nossa integração com Slack para recebimento das notificações. 
+A implementação prática e a documentação detalhada proporcionam uma base sólida para futuros projetos de 
+infraestrutura e administração de servidores.
+
+
+
+
