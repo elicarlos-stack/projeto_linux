@@ -282,6 +282,7 @@ if [ ! -f "$LOGFILE" ]; then
     sudo chmod 666 "$LOGFILE"
 fi
 
+# webhook do Slack
 LOGFILE="/var/log/monitoramento.log"
 SLACK_WEBHOOK_URL="https://hooks.slack.com/services/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" #Substituir pela URL do webhook do Slack 
 
