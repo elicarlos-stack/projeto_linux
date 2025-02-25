@@ -949,7 +949,7 @@ sudo service cron start
 
 ```
 
-## Conclusão
+## :clipboard: Conclusão
 
 A elaboração deste projeto proporciona desenvolver o conhecimento técnico em Linux, AWS e automação através de Scripts, 
 também reforça a importância de monitorar continuamente os serviços para garantir a alta disponibilidade dos serviços 
