@@ -595,10 +595,11 @@ Para quem deseja se aprofundar mais:
 
 ### Automação com User Data na (AWS):
 Podemos configurar a EC2 para já iniciar com Nginx, HTML e script de monitoramento via "User Data".
+Basta organizar o arquivo da seguinte maneira e adicioná-lo na hora de criar uma instância. Por exemplo: em EC2, vá em "Instances" e clique em "Launch Instance" (criar instância), conforme ensinado no início do projeto sobre como criar uma instância na EC2. Depois de ter colocado as especificações, em "Advanced details" (detalhes avançados), expanda a flag e, no final, haverá um campo de "User data - optional". 
 
 <img src="img/user_data1.png" alt="">
 
-Basta organizar o arquivo da seguinte maneira e adicioná-lo na hora de criar uma instância. Por exemplo: em EC2, vá em "Instances" e clique em "Launch Instance" (criar instância), conforme ensinado no início do projeto sobre como criar uma instância na EC2. Depois de ter colocado as especificações, em "Advanced details" (detalhes avançados), expanda a flag e, no final, haverá um campo de "User data - optional". Copie o arquivo abaixo e cole no campo. Depois, clique em "Launch instance" (criar instância). Pronto, ao executar a instância, ela será carregada com Nginx, HTML e o script de monitoramento. Também deixarei o arquivo disponível nas pastas para consulta.
+Copie o arquivo abaixo e cole no campo. Depois, clique em "Launch instance" (criar instância). Pronto, ao executar a instância, ela será carregada com Nginx, HTML e o script de monitoramento. Também deixarei o arquivo disponível nas pastas para consulta.
 <br>
 
 <img src="img/user_data2.png" alt="">
