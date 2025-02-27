@@ -197,7 +197,7 @@ sudo apt install -y curl gnupg2 ca-certificates lsb-release
 Logo após execute o comando para adicionar a chave de assinatura e configurar o repositorio do Nginx, observe que ao adicionar criamos e salvamos o arquivo em "nginx.list". comando para baixar a assinatura: 
 
 ```
-curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -**
+curl -fsSL https://nginx.org/keys/nginx_signing.key | sudo apt-key add -
 ```
  
 depois execute: **echo "deb http://nginx.org/packages/debian $(lsb_release -cs) nginx" | sudo tee /etc/apt/sources.list.d/nginx.list** para que adicione o repositório oficial do Nginx ao arquivo de fontes de pacotes.
